@@ -196,9 +196,6 @@
             voltage = new_signals[sig_name].value[new_signals[sig_name].size - 1];
         }
 
-        //Update value
-        $('#value').text(parseFloat(voltage).toFixed(2) + "V");
-
         // Update graph
         APP.plot.setData(pointArr);
         APP.plot.resize();
@@ -268,18 +265,7 @@ $(function() {
                     show: false
                 }
     });
-	
-	// Gain change
-    $("#gain_set").on("change input", function() {
-        APP.setGain();
-    });
-
-
-    // Offset change
-    $("#offset_set").on("change input", function() {
-        APP.setOffset(); 
-    });
-	
+		
 	
 	// Amplitude change
     $("#amplitude_set").on("change input", function() {
