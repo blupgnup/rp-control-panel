@@ -1,0 +1,106 @@
+<!-- 
+ *
+ * Red Pitaya Test Application
+ * Based on the generic template application (v0.94)
+ *
+ *
+ * (c) Red Pitaya  http://www.redpitaya.com
+ *
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"></meta>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Control Panel</title>
+    <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css?1" onerror="location.reload()">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="../assets/loader.css?1" rel="stylesheet" type="text/css" onerror="location.reload()" />
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <script src="js/jquery.flot.js"></script>
+	<script src="js/pako.js"></script>
+    <script src="js/app.js"></script>
+</head>
+
+<body>
+	<div id="loader-wrapper">
+        <div id="loader"></div>
+    </div>
+    <div id="header">
+        <div id="description">&nbsp;</div>
+    </div>
+	<div class="full-content">
+		<div class="container-fluid text-center">
+			<div class="navbar navbar-inverse" role="navigation">
+				<div class="container">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="/">
+							<img class="back-btn" src="../assets/images/navigation_arrow_left.png">
+						</a>
+						<img class="logo" width=110 src="img/Mirega_logo1.png">
+					</div>
+					<div class="collapse navbar-collapse">
+						<ul class="nav navbar-nav">
+						</ul>
+					</div>
+					<div align="center" style="font-size: 18pt;color: lightgray;padding-right: 20%;padding-left: 20%;padding-top: 5px;">
+						Control Panel
+					</div>
+				</div>
+			</div>
+			<div class="row justify-content-md-center">
+				<div class="col-md-3 col-md-offset-1">
+					<div class="col-md-6">
+                        Switch led 0
+                        <div class="material-switch pull-right">
+                            <input id="flexSwitchLedState" name="flexSwitchLedStateOption001" type="checkbox"/>
+                            <label for="flexSwitchLedState" class="label-primary"> </label>
+                        </div>
+                    </div>
+					<div class="col-md-6">
+						<div id='led_off'>LED Off</div>
+						<div id='led_on'>LED On</div>
+					</div>
+
+			
+					<br>
+					<hr>
+
+					<span> Channel 1 - Amplitude</span>
+					<div id='amplitude_setup'>
+						<div>Amplitude: V</div>
+						<input id='amplitude_set' type="range" step="0.01" size="2" value="0" min = "0" max = "1.8">
+					</div>
+					<br>
+					<!-- <button id='read_button' type="button" class="btn btn-secondary">Read analog</button> -->
+					<span>Voltage : </span>
+					<span id='value'></span>
+					<br><br>
+					<div id='gain_setup'>
+						<div>Gain: <span id='gain_value'></span></div>
+						<input id='gain_set' type="range" size="2" value="1" min = "1" max = "100">
+					</div>
+					<div id='offset_setup'>
+						<div>Offset: <span id='offset_value'></span></div>
+						<input id='offset_set' type="range" size="2" value="0" min = "0" max = "5" step="0.1">
+					</div>
+				
+				</div>
+				
+
+				
+				<!-- Force next columns to break to new line -->
+				<div class="w-100"></div>
+				
+				<div class="col-md-6 col-md-offset-1">
+					<div id='placeholder'></div>
+					<br>
+				</div>			
+			</div>
+		</div>
+	</div>
+</body>
+</html>

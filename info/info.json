@@ -1,0 +1,6 @@
+{
+    "name": "Control Panel",
+    "version": "0.94-BUILD_NUMBER",
+    "revision": "REVISION",
+    "description": "Simple control panel for the Red Pitaya. Based on web example template"
+}
