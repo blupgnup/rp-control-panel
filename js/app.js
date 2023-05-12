@@ -25,8 +25,6 @@
 	
 	// Parameters
     APP.processing = false;
-    APP.gain = 1;
-    APP.offset = 0;
 	
 	//LED state
     APP.led_state = false;
@@ -80,12 +78,6 @@
                 element.parentNode.removeChild(element);
                 console.log('Socket opened');               
             };
-					
-			//Set initial gain
-            //APP.setGain();
-
-            //Set initial offset
-            //APP.setOffset();
 
             APP.ws.onclose = function() {
                 console.log('Socket closed');
@@ -128,41 +120,7 @@
             };
         }
     };
-	
-	
-	//Read value
-    APP.readValue = function() {
 
-        var local = {};
-        local['READ_VALUE'] = { value: true };
-        APP.ws.send(JSON.stringify({ parameters: local }));
-    };
-	
-	//Set gain
-    APP.setGain = function() {
-
-        APP.gain = $('#gain_set').val();
-
-        var local = {};
-        local['GAIN'] = { value: APP.gain };
-        APP.ws.send(JSON.stringify({ parameters: local }));
-
-        $('#gain_value').text(APP.gain);
-
-    };
-
-    //Set offset
-    APP.setOffset = function() {
-
-        APP.offset = $('#offset_set').val();
-
-        var local = {};
-        local['OFFSET'] = { value: APP.offset };
-        APP.ws.send(JSON.stringify({ parameters: local }));
-
-        $('#offset_value').text(APP.offset);
-
-    };
 	
 	// Set Amplitude
 	APP.setAmplitude = function() {
@@ -178,7 +136,6 @@
     APP.processSignals = function(new_signals) {
 
 		var pointArr = [];
-        var voltage;
 
         // Draw signals
         for (sig_name in new_signals) {
@@ -192,8 +149,6 @@
             }
 
             pointArr.push(points);
-
-            voltage = new_signals[sig_name].value[new_signals[sig_name].size - 1];
         }
 
         // Update graph
@@ -257,7 +212,7 @@ $(function() {
                 },
                 yaxis: {
                     min: 0,
-                    max: 5
+                    max: 35
                 },
                 xaxis: {
                     min: 0,
