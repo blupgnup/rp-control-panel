@@ -135,11 +135,15 @@
     // Processes newly received data for signals
     APP.processSignals = function(new_signals) {
 
-		var pointArr = [];
+        var pointArr = [];
+        var data_1 = [];
+        var data_2 = [];
+        var data_3 = [];
+        var data_4 = [];
 
         // Draw signals
         for (sig_name in new_signals) {
-
+            
             // Ignore empty signals
             if (new_signals[sig_name].size == 0) continue;
 
@@ -151,8 +155,25 @@
             pointArr.push(points);
         }
 
+        var data_pool = [{
+            data: pointArr[0],
+            label: "Signal 1"
+        }, {
+            data: pointArr[1],
+            label: "Signal 2"
+        }, {
+            data: pointArr[2],
+            label: "Signal 3",
+            yaxis: 2
+        }, {
+            data: pointArr[3],
+            label: "Signal 4"
+        }];
+
+        //console.log(pointArr[0])
+
         // Update graph
-        APP.plot.setData(pointArr);
+        APP.plot.setData(data_pool);
         APP.plot.resize();
         APP.plot.setupGrid();
         APP.plot.draw();
@@ -205,6 +226,7 @@ $(function() {
         APP.readValue(); 
     });
 	
+
 	//Init plot
     APP.plot = $.plot($("#placeholder"), [], { 
                 series: {
@@ -214,11 +236,16 @@ $(function() {
                     min: 0,
                     max: 35
                 },
+                y2axis: {
+                    autoscale: true
+                },
                 xaxis: {
                     min: 0,
                     max: 1024,
                     show: false
-                }
+                },
+                xaxes: [ { } ],
+                yaxes: [ { }, { position: "right", min: 20 } ]
     });
 		
 	
