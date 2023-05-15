@@ -219,17 +219,17 @@ $(function() {
                 },
                 xaxis: {
                     min: 0,
-                    max: 1024,
+                    max: 512,
                     show: false
                 },
                 xaxes: [
                     { }
                 ],
                 yaxes: [
-                    { position: 'left' , min: 0, max: 35},
-                    { position: 'left' , min: 0, max: 35},
-                    { position: 'right' , min: -5, max: 5},
-                    { position: 'right' , min: 0, max: 100}
+                    { position: 'left' , min: 10, max: 35},
+                    { position: 'left' , min: 10, max: 35},
+                    { position: 'right' , min: -0.5, max: 0.5},
+                    { position: 'right' , min: 0, max: 0.100}
                 ]
     });
 		

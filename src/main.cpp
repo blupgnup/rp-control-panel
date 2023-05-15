@@ -9,8 +9,8 @@
 #include "main.h"
 
 //Signal size
-#define SIGNAL_SIZE_DEFAULT      1024
-#define SIGNAL_UPDATE_INTERVAL      50
+#define SIGNAL_SIZE_DEFAULT      512
+#define SIGNAL_UPDATE_INTERVAL      20
 
 
 //Signal
@@ -25,8 +25,6 @@ std::vector<float> iLas_data(SIGNAL_SIZE_DEFAULT);
 
 //Parameter
 CBooleanParameter laserState("LED_STATE", CBaseParameter::RW, false, 0);
-CIntParameter GAIN("GAIN", CBaseParameter::RW, 1, 0, 1, 100);
-CFloatParameter OFFSET("OFFSET", CBaseParameter::RW, 0.0, 0, 0.0, 5.0);
 CFloatParameter AMPLITUDE("AMPLITUDE", CBaseParameter::RW, 0, 0, 0, 1.8);
 
 
