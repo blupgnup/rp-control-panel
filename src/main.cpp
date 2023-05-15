@@ -24,7 +24,7 @@ std::vector<float> iTec_data(SIGNAL_SIZE_DEFAULT);
 std::vector<float> iLas_data(SIGNAL_SIZE_DEFAULT);
 
 //Parameter
-CBooleanParameter ledState("LED_STATE", CBaseParameter::RW, false, 0);
+CBooleanParameter laserState("LED_STATE", CBaseParameter::RW, false, 0);
 CIntParameter GAIN("GAIN", CBaseParameter::RW, 1, 0, 1, 100);
 CFloatParameter OFFSET("OFFSET", CBaseParameter::RW, 0.0, 0, 0.0, 5.0);
 CFloatParameter AMPLITUDE("AMPLITUDE", CBaseParameter::RW, 0, 0, 0, 1.8);
@@ -50,6 +50,9 @@ int rp_app_init(void)
 	
 	//Set signal update interval
     CDataManager::GetInstance()->SetSignalInterval(SIGNAL_UPDATE_INTERVAL);
+
+    // configure DIO7_N to output
+    rp_DpinSetDirection (RP_DIO7_N, RP_OUT);
 	
     return 0;
 }
@@ -132,23 +135,23 @@ void UpdateParams(void){}
 
 
 void OnNewParams(void) {
-	ledState.Update();
+	laserState.Update();
 	
-	// If ledState on, we switch the led state
-	if (ledState.Value() == false)
+	// If laserState on, we switch the laser state
+	if (laserState.Value() == false)
 	{
+        rp_DpinSetState (RP_DIO7_N, RP_LOW);
+        // We also switch on the led 0 as an indicator
 		rp_DpinSetState(RP_LED0, RP_LOW);
 	}
 	else
 	{
+        rp_DpinSetState (RP_DIO7_N, RP_HIGH);
+        // And switching off the led 0
 		rp_DpinSetState(RP_LED0, RP_HIGH);
 	}
 	
-	
-	GAIN.Update();
-    OFFSET.Update();
 	AMPLITUDE.Update();
-	
 }
 
 

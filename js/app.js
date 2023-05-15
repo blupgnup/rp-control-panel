@@ -26,8 +26,8 @@
 	// Parameters
     APP.processing = false;
 	
-	//LED state
-    APP.led_state = false;
+	//Laser state
+    APP.laser_state = false;
 
 
 
@@ -184,24 +184,24 @@
 
 // Page onload event handler
 $(function() {
-	// program checks if led_state switch was clicked
-   $('#flexSwitchLedState').click(function() {
+	// program checks if laser_state switch was clicked
+   $('#flexSwitchLaserState').click(function() {
 
-       // changes local led state
-       if (APP.led_state == true){
-           $('#led_on').hide();
-           $('#led_off').show();
-           APP.led_state = false;
+       // changes local laser state
+       if (APP.laser_state == true){
+           $('#laser_on').hide();
+           $('#laser_off').show();
+           APP.laser_state = false;
        }
        else{
-           $('#led_off').hide();
-           $('#led_on').show();
-           APP.led_state = true;
+           $('#laser_off').hide();
+           $('#laser_on').show();
+           APP.laser_state = true;
        }
 
-       // sends current led state to backend
+       // sends current laser state to backend
        var local = {};
-       local['LED_STATE'] = { value: APP.led_state };
+       local['LED_STATE'] = { value: APP.laser_state };
        APP.ws.send(JSON.stringify({ parameters: local }));
    });
    
@@ -228,7 +228,7 @@ $(function() {
                 yaxes: [
                     { position: 'left' , min: 0, max: 35},
                     { position: 'left' , min: 0, max: 35},
-                    { position: 'right' , min: -1, max: 1},
+                    { position: 'right' , min: -5, max: 5},
                     { position: 'right' , min: 0, max: 100}
                 ]
     });
