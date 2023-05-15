@@ -135,15 +135,14 @@
     // Processes newly received data for signals
     APP.processSignals = function(new_signals) {
 
-        var pointArr = [];
-        var data_1 = [];
-        var data_2 = [];
-        var data_3 = [];
-        var data_4 = [];
+        var data_pool = [];
+        var axis = 0;
 
         // Draw signals
         for (sig_name in new_signals) {
-            
+            // Incrementing axis number (axis starts at 1)
+            axis += 1;
+
             // Ignore empty signals
             if (new_signals[sig_name].size == 0) continue;
 
@@ -152,25 +151,13 @@
                     points.push([i, new_signals[sig_name].value[i]]);
             }
 
-            pointArr.push(points);
+            //Pushing data into the data_pool
+            data_pool.push({
+                data: points,
+                label: sig_name,
+                yaxis: axis
+            })            
         }
-
-        var data_pool = [{
-            data: pointArr[0],
-            label: "Signal 1"
-        }, {
-            data: pointArr[1],
-            label: "Signal 2"
-        }, {
-            data: pointArr[2],
-            label: "Signal 3",
-            yaxis: 2
-        }, {
-            data: pointArr[3],
-            label: "Signal 4"
-        }];
-
-        //console.log(pointArr[0])
 
         // Update graph
         APP.plot.setData(data_pool);
@@ -193,8 +180,6 @@
 	
 
 }(window.APP = window.APP || {}, jQuery));
-
-
 
 
 // Page onload event handler
@@ -232,20 +217,20 @@ $(function() {
                 series: {
                     shadowSize: 0, // Drawing is faster without shadows
                 },
-                yaxis: {
-                    min: 0,
-                    max: 35
-                },
-                y2axis: {
-                    autoscale: true
-                },
                 xaxis: {
                     min: 0,
                     max: 1024,
                     show: false
                 },
-                xaxes: [ { } ],
-                yaxes: [ { }, { position: "right", min: 20 } ]
+                xaxes: [
+                    { }
+                ],
+                yaxes: [
+                    { position: 'left' , min: 0, max: 35},
+                    { position: 'left' , min: 0, max: 35},
+                    { position: 'right' , min: -1, max: 1},
+                    { position: 'right' , min: 0, max: 100}
+                ]
     });
 		
 	

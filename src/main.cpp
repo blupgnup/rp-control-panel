@@ -10,11 +10,11 @@
 
 //Signal size
 #define SIGNAL_SIZE_DEFAULT      1024
-#define SIGNAL_UPDATE_INTERVAL      100
+#define SIGNAL_UPDATE_INTERVAL      50
 
 
 //Signal
-CFloatSignal RTH("RTH", SIGNAL_SIZE_DEFAULT, 0.0f);
+CFloatSignal TACT("TACT", SIGNAL_SIZE_DEFAULT, 0.0f);
 CFloatSignal TSET("TSET", SIGNAL_SIZE_DEFAULT, 0.0f);
 CFloatSignal ITEC("ITEC", SIGNAL_SIZE_DEFAULT, 0.0f);
 CFloatSignal ILAS("ILAS", SIGNAL_SIZE_DEFAULT, 0.0f);
@@ -120,7 +120,7 @@ void UpdateSignals(void){
     //Write data to signal
     for(int i = 0; i < SIGNAL_SIZE_DEFAULT; i++) 
     {
-        RTH[i] = tAct_data[i];
+        TACT[i] = tAct_data[i];
         TSET[i] = tSet_data[i];
         ITEC[i] = iTec_data[i];
         ILAS[i] = iLas_data[i];
