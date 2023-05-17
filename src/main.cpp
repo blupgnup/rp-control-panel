@@ -9,20 +9,22 @@
 #include "main.h"
 
 //Signal size
-#define SIGNAL_SIZE_DEFAULT      1024
-#define SIGNAL_UPDATE_INTERVAL      100
+#define SIGNAL_SIZE_DEFAULT      512
+#define SIGNAL_UPDATE_INTERVAL      20
 
 
 //Signal
-CFloatSignal VOLTAGE("VOLTAGE", SIGNAL_SIZE_DEFAULT, 0.0f);
-std::vector<float> g_data(SIGNAL_SIZE_DEFAULT);
-
+CFloatSignal TACT("TACT", SIGNAL_SIZE_DEFAULT, 0.0f);
+CFloatSignal TSET("TSET", SIGNAL_SIZE_DEFAULT, 0.0f);
+CFloatSignal ITEC("ITEC", SIGNAL_SIZE_DEFAULT, 0.0f);
+CFloatSignal ILAS("ILAS", SIGNAL_SIZE_DEFAULT, 0.0f);
+std::vector<float> tAct_data(SIGNAL_SIZE_DEFAULT);
+std::vector<float> tSet_data(SIGNAL_SIZE_DEFAULT);
+std::vector<float> iTec_data(SIGNAL_SIZE_DEFAULT);
+std::vector<float> iLas_data(SIGNAL_SIZE_DEFAULT);
 
 //Parameter
-CBooleanParameter ledState("LED_STATE", CBaseParameter::RW, false, 0);
-CBooleanParameter READ_VALUE("READ_VALUE", CBaseParameter::RW, false, 0);
-CIntParameter GAIN("GAIN", CBaseParameter::RW, 1, 0, 1, 100);
-CFloatParameter OFFSET("OFFSET", CBaseParameter::RW, 0.0, 0, 0.0, 5.0);
+CBooleanParameter laserState("LED_STATE", CBaseParameter::RW, false, 0);
 CFloatParameter AMPLITUDE("AMPLITUDE", CBaseParameter::RW, 0, 0, 0, 1.8);
 
 
@@ -46,6 +48,9 @@ int rp_app_init(void)
 	
 	//Set signal update interval
     CDataManager::GetInstance()->SetSignalInterval(SIGNAL_UPDATE_INTERVAL);
+
+    // configure DIO7_N to output
+    rp_DpinSetDirection (RP_DIO7_N, RP_OUT);
 	
     return 0;
 }
@@ -83,19 +88,43 @@ void UpdateSignals(void){
 	float val;
     
 	// Update analog pin value
-	rp_AOpinSetValue(1, AMPLITUDE.Value());
+	rp_AOpinSetValue(0, AMPLITUDE.Value());
 	
-    //Read data from pin 1
-    rp_AIpinGetValue(1, &val);
+    // Read values from analog input and convert to physical values
+    
+    //Read Tact from pin 0
+    rp_AIpinGetValue(0, &val);
+    //Calculating and pushing it to vector
+    //rTh_data.erase(rTh_data.begin());
+    //rTh_data.push_back((10 * (10 - val) / (5 * val)));
+    tAct_data.erase(tAct_data.begin());
+    tAct_data.push_back((25/4 * val) + 10);
 
-    //Push it to vector
-    g_data.erase(g_data.begin());
-    g_data.push_back(val);
+    //Read Tset from pin 1
+    rp_AIpinGetValue(1, &val);
+    //Calculating and pushing it to vector
+    tSet_data.erase(tSet_data.begin());
+    tSet_data.push_back((25/4 * val) + 10);  // We convert VtSet to tSet same as tAct
+
+    //Read Itec from pin 2
+    rp_AIpinGetValue(2, &val);
+    //Calculating and pushing it to vector
+    iTec_data.erase(iTec_data.begin());
+    iTec_data.push_back( 1 * (val - 2.5));
+
+    //Read Ilas from pin 3
+    rp_AIpinGetValue(3, &val);
+    //Calculating and pushing it to vector
+    iLas_data.erase(iLas_data.begin());
+    iLas_data.push_back( 0.05 * val);
 
     //Write data to signal
     for(int i = 0; i < SIGNAL_SIZE_DEFAULT; i++) 
     {
-        VOLTAGE[i] = g_data[i] * GAIN.Value() + OFFSET.Value();
+        TACT[i] = tAct_data[i];
+        TSET[i] = tSet_data[i];
+        ITEC[i] = iTec_data[i];
+        ILAS[i] = iLas_data[i];
     }
 }
 
@@ -104,38 +133,23 @@ void UpdateParams(void){}
 
 
 void OnNewParams(void) {
-	ledState.Update();
-	READ_VALUE.Update();
+	laserState.Update();
 	
-	// If ledState on, we switch the led state
-	if (ledState.Value() == false)
+	// If laserState on, we switch the laser state
+	if (laserState.Value() == false)
 	{
+        rp_DpinSetState (RP_DIO7_N, RP_LOW);
+        // We also switch on the led 0 as an indicator
 		rp_DpinSetState(RP_LED0, RP_LOW);
 	}
 	else
 	{
+        rp_DpinSetState (RP_DIO7_N, RP_HIGH);
+        // And switching off the led 0
 		rp_DpinSetState(RP_LED0, RP_HIGH);
 	}
 	
-	// If READ_VALUE, we process the analog reading
-	if (READ_VALUE.Value() == true)
-	{
-		float val;
-
-		//Read data from pin 1
-		rp_AIpinGetValue(1, &val);
-
-		//Write data to signal
-		VOLTAGE[0] = val;
-
-		//Reset READ value
-		READ_VALUE.Set(false);
-	}
-	
-	GAIN.Update();
-    OFFSET.Update();
 	AMPLITUDE.Update();
-	
 }
 
 

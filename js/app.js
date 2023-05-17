@@ -25,11 +25,9 @@
 	
 	// Parameters
     APP.processing = false;
-    APP.gain = 1;
-    APP.offset = 0;
 	
-	//LED state
-    APP.led_state = false;
+	//Laser state
+    APP.laser_state = false;
 
 
 
@@ -80,12 +78,6 @@
                 element.parentNode.removeChild(element);
                 console.log('Socket opened');               
             };
-					
-			//Set initial gain
-            //APP.setGain();
-
-            //Set initial offset
-            //APP.setOffset();
 
             APP.ws.onclose = function() {
                 console.log('Socket closed');
@@ -128,41 +120,7 @@
             };
         }
     };
-	
-	
-	//Read value
-    APP.readValue = function() {
 
-        var local = {};
-        local['READ_VALUE'] = { value: true };
-        APP.ws.send(JSON.stringify({ parameters: local }));
-    };
-	
-	//Set gain
-    APP.setGain = function() {
-
-        APP.gain = $('#gain_set').val();
-
-        var local = {};
-        local['GAIN'] = { value: APP.gain };
-        APP.ws.send(JSON.stringify({ parameters: local }));
-
-        $('#gain_value').text(APP.gain);
-
-    };
-
-    //Set offset
-    APP.setOffset = function() {
-
-        APP.offset = $('#offset_set').val();
-
-        var local = {};
-        local['OFFSET'] = { value: APP.offset };
-        APP.ws.send(JSON.stringify({ parameters: local }));
-
-        $('#offset_value').text(APP.offset);
-
-    };
 	
 	// Set Amplitude
 	APP.setAmplitude = function() {
@@ -177,11 +135,13 @@
     // Processes newly received data for signals
     APP.processSignals = function(new_signals) {
 
-		var pointArr = [];
-        var voltage;
+        var data_pool = [];
+        var axis = 0;
 
         // Draw signals
         for (sig_name in new_signals) {
+            // Incrementing axis number (axis starts at 1)
+            axis += 1;
 
             // Ignore empty signals
             if (new_signals[sig_name].size == 0) continue;
@@ -191,16 +151,16 @@
                     points.push([i, new_signals[sig_name].value[i]]);
             }
 
-            pointArr.push(points);
-
-            voltage = new_signals[sig_name].value[new_signals[sig_name].size - 1];
+            //Pushing data into the data_pool
+            data_pool.push({
+                data: points,
+                label: sig_name,
+                yaxis: axis
+            })            
         }
 
-        //Update value
-        $('#value').text(parseFloat(voltage).toFixed(2) + "V");
-
         // Update graph
-        APP.plot.setData(pointArr);
+        APP.plot.setData(data_pool);
         APP.plot.resize();
         APP.plot.setupGrid();
         APP.plot.draw();
@@ -222,28 +182,26 @@
 }(window.APP = window.APP || {}, jQuery));
 
 
-
-
 // Page onload event handler
 $(function() {
-	// program checks if led_state switch was clicked
-   $('#flexSwitchLedState').click(function() {
+	// program checks if laser_state switch was clicked
+   $('#flexSwitchLaserState').click(function() {
 
-       // changes local led state
-       if (APP.led_state == true){
-           $('#led_on').hide();
-           $('#led_off').show();
-           APP.led_state = false;
+       // changes local laser state
+       if (APP.laser_state == true){
+           $('#laser_on').hide();
+           $('#laser_off').show();
+           APP.laser_state = false;
        }
        else{
-           $('#led_off').hide();
-           $('#led_on').show();
-           APP.led_state = true;
+           $('#laser_off').hide();
+           $('#laser_on').show();
+           APP.laser_state = true;
        }
 
-       // sends current led state to backend
+       // sends current laser state to backend
        var local = {};
-       local['LED_STATE'] = { value: APP.led_state };
+       local['LED_STATE'] = { value: APP.laser_state };
        APP.ws.send(JSON.stringify({ parameters: local }));
    });
    
@@ -253,33 +211,28 @@ $(function() {
         APP.readValue(); 
     });
 	
+
 	//Init plot
     APP.plot = $.plot($("#placeholder"), [], { 
                 series: {
                     shadowSize: 0, // Drawing is faster without shadows
                 },
-                yaxis: {
-                    min: 0,
-                    max: 5
-                },
                 xaxis: {
                     min: 0,
-                    max: 1024,
+                    max: 512,
                     show: false
-                }
+                },
+                xaxes: [
+                    { }
+                ],
+                yaxes: [
+                    { position: 'left' , min: 10, max: 35},
+                    { position: 'left' , min: 10, max: 35},
+                    { position: 'right' , min: -0.5, max: 0.5},
+                    { position: 'right' , min: 0, max: 0.100}
+                ]
     });
-	
-	// Gain change
-    $("#gain_set").on("change input", function() {
-        APP.setGain();
-    });
-
-
-    // Offset change
-    $("#offset_set").on("change input", function() {
-        APP.setOffset(); 
-    });
-	
+		
 	
 	// Amplitude change
     $("#amplitude_set").on("change input", function() {
