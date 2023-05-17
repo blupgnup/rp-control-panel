@@ -149,11 +149,15 @@ body {
     margin: 0 auto;
 }
 
-#laser_off {
+#laser_off,
+#ch1_off,
+#ch2_off {
     color: #F00;
 }
 
-#laser_on {
+#laser_on,
+#ch1_on,
+#ch2_on {
     display: none;
     color: #0F0;
 }
