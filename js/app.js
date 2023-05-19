@@ -135,8 +135,9 @@
     // Set parameters for Fast output generator OUT1
     APP.setFrequencyCh1 = function() {
         APP.frequency_ch1 = $('#frequency_set_ch1').val();
+        APP.frequency_unit_ch1 = $('#frequency_unit_set_ch1').val();
         var local = {};
-        local['FREQUENCY_CH1'] = { value: APP.frequency_ch1 };
+        local['FREQUENCY_CH1'] = { value: APP.frequency_ch1 * APP.frequency_unit_ch1};
         APP.ws.send(JSON.stringify({ parameters: local }));
         $('#frequency_value_ch1').text(APP.frequency_ch1);
     };
@@ -169,8 +170,9 @@
     // Set parameters for Fast output generator OUT2
     APP.setFrequencyCh2 = function() {
         APP.frequency_ch2 = $('#frequency_set_ch2').val();
+        APP.frequency_unit_ch2 = $('#frequency_unit_set_ch2').val();
         var local = {};
-        local['FREQUENCY_CH2'] = { value: APP.frequency_ch2 };
+        local['FREQUENCY_CH2'] = { value: APP.frequency_ch2 *  APP.frequency_unit_ch2 };
         APP.ws.send(JSON.stringify({ parameters: local }));
         $('#frequency_value_ch2').text(APP.frequency_ch2);
     };
@@ -308,7 +310,10 @@ $(function() {
     });
 	
     // Parameters change Ch1
-    $("#frequency_setup_ch1").on("change input", function() {
+    $("#frequency_set_ch1").on("change input", function() {
+        APP.setFrequencyCh1();
+    });
+    $("#frequency_unit_set_ch1").on("change input", function() {
         APP.setFrequencyCh1();
     });
     $("#amplitude_setup_ch1").on("change input", function() {
@@ -342,7 +347,10 @@ $(function() {
     });
 
     // Parameters change Ch2
-    $("#frequency_setup_ch2").on("change input", function() {
+    $("#frequency_set_ch2").on("change input", function() {
+        APP.setFrequencyCh2();
+    });
+    $("#frequency_unit_set_ch2").on("change input", function() {
         APP.setFrequencyCh2();
     });
     $("#amplitude_setup_ch2").on("change input", function() {

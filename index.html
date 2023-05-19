@@ -92,8 +92,16 @@
                             <label for="flexSwitchCh1State" class="label-primary"> </label>
                         </div>
 						<div id='frequency_setup_ch1'>
-							<div>Frequency: <span id='frequency_value_ch1'></span> Hz</div>
-							<input id='frequency_set_ch1' type="range" size="2" value="10" min = "1" max = "100">
+							<div>Frequency: <span id='frequency_value_ch1'></span>
+								<span>
+									<select size="1" id="frequency_unit_set_ch1">
+										<option selected value="1">Hz</option>
+										<option value="1e3">kHz</option>
+										<option value="1e6">MHz</option>
+									</select>
+								</span>
+							</div>
+							<input id='frequency_set_ch1' type="range" size="2" value="10" min = "1" max = "999">
 							
 						</div>
 						<div id='amplitude_setup_ch1'>
@@ -120,12 +128,21 @@
 						<div id='ch2_on'>Output 2</div>
 
 						<div class="material-switch">
-                            <input id="flexSwitchCh2State" name="flexSwitchCh1StateOption001" type="checkbox"/>
+                            <input id="flexSwitchCh2State" name="flexSwitchCh2StateOption001" type="checkbox"/>
                             <label for="flexSwitchCh2State" class="label-primary"> </label>
                         </div>
 						<div id='frequency_setup_ch2'>
-							<div>Frequency: <span id='frequency_value_ch2'></span> Hz</div>
-							<input id='frequency_set_ch2' type="range" size="2" value="10" min = "1" max = "100">
+							<div>
+								Frequency: <span id='frequency_value_ch2'></span>
+								<span>
+									<select size="1" id="frequency_unit_set_ch2">
+										<option selected value="1">Hz</option>
+										<option value="1e3">kHz</option>
+										<option value="1e6">MHz</option>
+									</select>
+								</span>
+							</div>
+							<input id='frequency_set_ch2' type="range" size="2" value="10" min = "1" max = "999">
 						</div>
 						<div id='amplitude_setup_ch2'>
 							<div>Amplitude: <span id='amplitude_value_ch2'></span> V</div>
