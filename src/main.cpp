@@ -235,9 +235,6 @@ void OnNewParams(void) {
     OFFSET_CH2.Update();
     WAVEFORM_CH2.Update();
 
-    // Set generators config
-    set_generator_config();
-
     ch1State.Update();
     // If Channel 1 is on, we switch the channel 1
 	if (ch1State.Value() == false)
@@ -247,6 +244,8 @@ void OnNewParams(void) {
     else
     {
         rp_GenReset();
+        // Set generators config
+        set_generator_config();
         // Init generator
         rp_GenOutEnable(RP_CH_1);
     }
@@ -258,6 +257,7 @@ void OnNewParams(void) {
         rp_GenOutDisable(RP_CH_2);
     }
     else
+    {
         // Init generator
         rp_GenOutEnable(RP_CH_2);
     }
