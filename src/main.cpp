@@ -28,14 +28,14 @@ CBooleanParameter laserState("LED_STATE", CBaseParameter::RW, false, 0);
 CFloatParameter AMPLITUDE("AMPLITUDE", CBaseParameter::RW, 0, 0, 0, 1.8);
 CBooleanParameter ch1State("CH1_STATE", CBaseParameter::RW, false, 0);
 CIntParameter FREQUENCY_CH1("FREQUENCY_CH1", CBaseParameter::RW, 1, 0, 1, 100);
-CFloatParameter AMPLITUDE_CH1("AMPLITUDE_CH1", CBaseParameter::RW, 0.5, 0, 0, 2);
+CFloatParameter AMPLITUDE_CH1("AMPLITUDE_CH1", CBaseParameter::RW, 0.5, 0, 0, 1);
 CFloatParameter OFFSET_CH1("OFFSET_CH1", CBaseParameter::RW, 0.25, 0, -1, 1);
-CIntParameter WAVEFORM_CH1("WAVEFORM_CH1", CBaseParameter::RW, 0, 0, 0, 2);
+CIntParameter WAVEFORM_CH1("WAVEFORM_CH1", CBaseParameter::RW, 0, 0, 0, 3);
 CBooleanParameter ch2State("CH2_STATE", CBaseParameter::RW, false, 0);
 CIntParameter FREQUENCY_CH2("FREQUENCY_CH2", CBaseParameter::RW, 1, 0, 1, 100);
-CFloatParameter AMPLITUDE_CH2("AMPLITUDE_CH2", CBaseParameter::RW, 0.5, 0, 0, 2);
+CFloatParameter AMPLITUDE_CH2("AMPLITUDE_CH2", CBaseParameter::RW, 0.5, 0, 0, 1);
 CFloatParameter OFFSET_CH2("OFFSET_CH2", CBaseParameter::RW, 0.25, 0, -1, 1);
-CIntParameter WAVEFORM_CH2("WAVEFORM_CH2", CBaseParameter::RW, 0, 0, 0, 2);
+CIntParameter WAVEFORM_CH2("WAVEFORM_CH2", CBaseParameter::RW, 0, 0, 0, 3);
 
 
 // Generator config
