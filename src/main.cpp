@@ -26,11 +26,13 @@ std::vector<float> iLas_data(SIGNAL_SIZE_DEFAULT);
 //Parameter
 CBooleanParameter laserState("LED_STATE", CBaseParameter::RW, false, 0);
 CFloatParameter AMPLITUDE("AMPLITUDE", CBaseParameter::RW, 0, 0, 0, 1.8);
+CBooleanParameter CH1_UPDATED("CH1_UPDATED", CBaseParameter::RW, false, 0);
 CBooleanParameter ch1State("CH1_STATE", CBaseParameter::RW, false, 0);
 CIntParameter FREQUENCY_CH1("FREQUENCY_CH1", CBaseParameter::RW, 1, 0, 1, 50e6);
 CFloatParameter AMPLITUDE_CH1("AMPLITUDE_CH1", CBaseParameter::RW, 0.5, 0, 0, 1);
 CFloatParameter OFFSET_CH1("OFFSET_CH1", CBaseParameter::RW, 0.25, 0, -1, 1);
 CIntParameter WAVEFORM_CH1("WAVEFORM_CH1", CBaseParameter::RW, 0, 0, 0, 3);
+CBooleanParameter CH2_UPDATED("CH2_UPDATED", CBaseParameter::RW, false, 0);
 CBooleanParameter ch2State("CH2_STATE", CBaseParameter::RW, false, 0);
 CIntParameter FREQUENCY_CH2("FREQUENCY_CH2", CBaseParameter::RW, 1, 0, 1, 50e6);
 CFloatParameter AMPLITUDE_CH2("AMPLITUDE_CH2", CBaseParameter::RW, 0.5, 0, 0, 1);
@@ -236,12 +238,20 @@ void OnNewParams(void) {
     }
     else
     {
-        // Set generators config
-        set_generator_config();
-        // Init generator
-        rp_GenOutEnable(RP_CH_1);
-        // We need to generate the trigger signal to start the waveform
-        rp_GenTriggerOnly(RP_CH_1);
+        CH1_UPDATED.Update();
+        // We update generator config only is some change is reported
+        if (CH1_UPDATED.Value() == true)
+        {
+            // Set generators config
+            set_generator_config();
+            // Init generator
+            rp_GenOutEnable(RP_CH_1);
+            // We need to generate the trigger signal to start the waveform
+            rp_GenTriggerOnly(RP_CH_1);
+
+            CH1_UPDATED.Value() = false;
+        }
+        
     }
 
     ch2State.Update();
@@ -252,12 +262,20 @@ void OnNewParams(void) {
     }
     else
     {
-        // Set generators config
-        set_generator_config();
-        // Init generator
-        rp_GenOutEnable(RP_CH_2);
-        // We need to generate the trigger signal to start the waveform
-        rp_GenTriggerOnly(RP_CH_2);
+        CH2_UPDATED.Update();
+        // We update generator config only is some change is reported
+        if (CH2_UPDATED.Value() == true)
+        {
+            // Set generators config
+            set_generator_config();
+            // Init generator
+            rp_GenOutEnable(RP_CH_2);
+            // We need to generate the trigger signal to start the waveform
+            rp_GenTriggerOnly(RP_CH_2);
+
+            CH2_UPDATED.Value() = false;
+        }
+        
     }
 }
 

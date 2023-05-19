@@ -308,6 +308,25 @@ $(function() {
     $("#amplitude_set").on("change input", function() {
         APP.setAmplitude(); 
     });
+
+    // Detect any changes in fast outputs
+    $("#ch1_setup").on("change input", function() {
+        APP.CH1_UPDATED = true;
+
+        // sends current Channel 1 update to backend
+        var local = {};
+        local['CH1_UPDATED'] = { value: APP.CH1_UPDATED };
+        APP.ws.send(JSON.stringify({ parameters: local }));
+    });
+
+    $("#ch2_setup").on("change input", function() {
+        APP.CH2_UPDATED = true;
+
+        // sends current Channel 2 update to backend
+        var local = {};
+        local['CH2_UPDATED'] = { value: APP.CH2_UPDATED };
+        APP.ws.send(JSON.stringify({ parameters: local }));
+    });
 	
     // Parameters change Ch1
     $("#frequency_set_ch1").on("change input", function() {
