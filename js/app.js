@@ -88,9 +88,6 @@
             };
 
             APP.ws.onmessage = function(ev) {
-				console.log('Message recieved');
-
-
                 //Capture signals
                 if (APP.processing) {
                     return;
