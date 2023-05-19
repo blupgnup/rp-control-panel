@@ -26,6 +26,70 @@ std::vector<float> iLas_data(SIGNAL_SIZE_DEFAULT);
 //Parameter
 CBooleanParameter laserState("LED_STATE", CBaseParameter::RW, false, 0);
 CFloatParameter AMPLITUDE("AMPLITUDE", CBaseParameter::RW, 0, 0, 0, 1.8);
+CBooleanParameter ch1State("CH1_STATE", CBaseParameter::RW, false, 0);
+CIntParameter FREQUENCY_CH1("FREQUENCY_CH1", CBaseParameter::RW, 1, 0, 1, 50e6);
+CFloatParameter AMPLITUDE_CH1("AMPLITUDE_CH1", CBaseParameter::RW, 0.5, 0, 0, 1);
+CFloatParameter OFFSET_CH1("OFFSET_CH1", CBaseParameter::RW, 0.25, 0, -1, 1);
+CIntParameter WAVEFORM_CH1("WAVEFORM_CH1", CBaseParameter::RW, 0, 0, 0, 3);
+CBooleanParameter ch2State("CH2_STATE", CBaseParameter::RW, false, 0);
+CIntParameter FREQUENCY_CH2("FREQUENCY_CH2", CBaseParameter::RW, 1, 0, 1, 50e6);
+CFloatParameter AMPLITUDE_CH2("AMPLITUDE_CH2", CBaseParameter::RW, 0.5, 0, 0, 1);
+CFloatParameter OFFSET_CH2("OFFSET_CH2", CBaseParameter::RW, 0.25, 0, -1, 1);
+CIntParameter WAVEFORM_CH2("WAVEFORM_CH2", CBaseParameter::RW, 0, 0, 0, 3);
+
+
+// Generator config
+void set_generator_config()
+{
+    //Set frequency
+    rp_GenFreq(RP_CH_1, FREQUENCY_CH1.Value());
+    rp_GenFreq(RP_CH_2, FREQUENCY_CH2.Value());
+
+    //Set offset
+    rp_GenOffset(RP_CH_1, OFFSET_CH1.Value());
+    rp_GenOffset(RP_CH_2, OFFSET_CH2.Value());
+
+    //Set amplitude
+    rp_GenAmp(RP_CH_1, AMPLITUDE_CH1.Value());
+    rp_GenAmp(RP_CH_2, AMPLITUDE_CH2.Value());
+
+    //Set waveform Channel 1
+    if (WAVEFORM_CH1.Value() == 0)
+    {
+        rp_GenWaveform(RP_CH_1, RP_WAVEFORM_SINE);
+    }
+    else if (WAVEFORM_CH1.Value() == 1)
+    {
+        rp_GenWaveform(RP_CH_1, RP_WAVEFORM_TRIANGLE);
+    }
+    else if (WAVEFORM_CH1.Value() == 2)
+    {
+        rp_GenWaveform(RP_CH_1, RP_WAVEFORM_RAMP_UP);
+    }
+    else if (WAVEFORM_CH1.Value() == 3)
+    {
+        rp_GenWaveform(RP_CH_1, RP_WAVEFORM_DC);
+    }
+
+    //Set waveform Channel 2
+    if (WAVEFORM_CH2.Value() == 0)
+    {
+        rp_GenWaveform(RP_CH_2, RP_WAVEFORM_SINE);
+    }
+    else if (WAVEFORM_CH2.Value() == 1)
+    {
+        rp_GenWaveform(RP_CH_2, RP_WAVEFORM_TRIANGLE);
+    }
+    else if (WAVEFORM_CH2.Value() == 2)
+    {
+        rp_GenWaveform(RP_CH_2, RP_WAVEFORM_RAMP_UP);
+    }
+    else if (WAVEFORM_CH2.Value() == 3)
+    {
+        rp_GenWaveform(RP_CH_2, RP_WAVEFORM_DC);
+    }
+    
+}
 
 
 const char *rp_app_desc(void)
@@ -51,6 +115,9 @@ int rp_app_init(void)
 
     // configure DIO7_N to output
     rp_DpinSetDirection (RP_DIO7_N, RP_OUT);
+
+    // Init generator config (without turning it on)
+    set_generator_config();
 	
     return 0;
 }
@@ -150,6 +217,48 @@ void OnNewParams(void) {
 	}
 	
 	AMPLITUDE.Update();
+
+    FREQUENCY_CH1.Update();
+    AMPLITUDE_CH1.Update();
+    OFFSET_CH1.Update();
+    WAVEFORM_CH1.Update();
+
+    FREQUENCY_CH2.Update();
+    AMPLITUDE_CH2.Update();
+    OFFSET_CH2.Update();
+    WAVEFORM_CH2.Update();
+
+    ch1State.Update();
+    // If Channel 1 is on, we switch the channel 1
+	if (ch1State.Value() == false)
+	{
+        rp_GenOutDisable(RP_CH_1);
+    }
+    else
+    {
+        // Set generators config
+        set_generator_config();
+        // Init generator
+        rp_GenOutEnable(RP_CH_1);
+        // We need to generate the trigger signal to start the waveform
+        rp_GenTriggerOnly(RP_CH_1);
+    }
+
+    ch2State.Update();
+    // If Channel 2 is on, we switch the channel 2
+	if (ch2State.Value() == false)
+	{
+        rp_GenOutDisable(RP_CH_2);
+    }
+    else
+    {
+        // Set generators config
+        set_generator_config();
+        // Init generator
+        rp_GenOutEnable(RP_CH_2);
+        // We need to generate the trigger signal to start the waveform
+        rp_GenTriggerOnly(RP_CH_2);
+    }
 }
 
 

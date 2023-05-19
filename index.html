@@ -72,11 +72,98 @@
 
 					<span> Channel 1 (Tmod) - Amplitude</span>
 					<div id='amplitude_setup'>
-						<div>From 0 to 1.8V</div>
+						<div>From 0 to 1.8V : <span id='amplitude_value'></span></div>
 						<input id='amplitude_set' type="range" step="0.01" size="2" value="0" min = "0" max = "1.8">
+						
 					</div>
 					<br>
 					
+					<br>
+
+					<h2>Fast output control </h2>
+					<hr>
+
+					<div class="col-md-6">
+                        <div id='ch1_off'>Output 1</div>
+						<div id='ch1_on'>Output 1</div>
+						
+						<div class="material-switch">
+                            <input id="flexSwitchCh1State" name="flexSwitchCh1StateOption001" type="checkbox"/>
+                            <label for="flexSwitchCh1State" class="label-primary"> </label>
+                        </div>
+						<div id='frequency_setup_ch1'>
+							<div>Frequency: <span id='frequency_value_ch1'></span>
+								<span>
+									<select size="1" id="frequency_unit_set_ch1">
+										<option selected value="1">Hz</option>
+										<option value="1e3">kHz</option>
+										<option value="1e6">MHz</option>
+									</select>
+								</span>
+							</div>
+							<input id='frequency_set_ch1' type="range" size="2" value="10" min = "1" max = "999">
+							
+						</div>
+						<div id='amplitude_setup_ch1'>
+							<div>Amplitude: <span id='amplitude_value_ch1'></span> V</div>
+							<input id='amplitude_set_ch1' type="range" step="0.01" size="2" value="0.0" min = "0" max = "1">
+						</div>
+						<div id='offset_setup_ch1'>
+							<div>Offset: <span id='offset_value_ch1'></span> V</div>
+							<input id='offset_set_ch1' type="range" step="0.01" size="2" value="0.0" min = "-1" max = "1">
+						</div>
+						<div id='waveform_setup_ch1'>
+							<div>Waveform</div>
+							<select size="1" id="waveform_set_ch1">
+								<option selected value="0">Sine</option>
+								<option value="1">Triangle</option>
+								<option value="2">Sawtooth</option>
+								<option value="3">DC</option>
+							</select>
+						</div>
+                        
+                    </div>
+					<div class="col-md-6">
+						<div id='ch2_off'>Output 2</div>
+						<div id='ch2_on'>Output 2</div>
+
+						<div class="material-switch">
+                            <input id="flexSwitchCh2State" name="flexSwitchCh2StateOption001" type="checkbox"/>
+                            <label for="flexSwitchCh2State" class="label-primary"> </label>
+                        </div>
+						<div id='frequency_setup_ch2'>
+							<div>
+								Frequency: <span id='frequency_value_ch2'></span>
+								<span>
+									<select size="1" id="frequency_unit_set_ch2">
+										<option selected value="1">Hz</option>
+										<option value="1e3">kHz</option>
+										<option value="1e6">MHz</option>
+									</select>
+								</span>
+							</div>
+							<input id='frequency_set_ch2' type="range" size="2" value="10" min = "1" max = "999">
+						</div>
+						<div id='amplitude_setup_ch2'>
+							<div>Amplitude: <span id='amplitude_value_ch2'></span> V</div>
+							<input id='amplitude_set_ch2' type="range" step="0.01" size="2" value="0.0" min = "0" max = "1">
+						</div>
+						<div id='offset_setup_ch2'>
+							<div>Offset: <span id='offset_value_ch2'></span> V</div>
+							<input id='offset_set_ch2' type="range" step="0.01" size="2" value="0.0" min = "-1" max = "1">
+						</div>
+						<div id='waveform_setup_ch2'>
+							<div>Waveform</div>
+							<select size="1" id="waveform_set_ch2">
+								<option selected value="0">Sine</option>
+								<option value="1">Triangle</option>
+								<option value="2">Sawtooth</option>
+								<option value="3">DC</option>
+							</select>
+						</div>
+					</div>
+
+			
 					<br>
 				
 				</div>
