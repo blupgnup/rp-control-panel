@@ -329,10 +329,7 @@ $(function() {
     });
 	
     // Parameters change Ch1
-    $("#frequency_set_ch1").on("change input", function() {
-        APP.setFrequencyCh1();
-    });
-    $("#frequency_unit_set_ch1").on("change input", function() {
+    $("#frequency_setup_ch1").on("change input", function() {
         APP.setFrequencyCh1();
     });
     $("#amplitude_setup_ch1").on("change input", function() {
@@ -366,10 +363,7 @@ $(function() {
     });
 
     // Parameters change Ch2
-    $("#frequency_set_ch2").on("change input", function() {
-        APP.setFrequencyCh2();
-    });
-    $("#frequency_unit_set_ch2").on("change input", function() {
+    $("#frequency_setup_ch2").on("change input", function() {
         APP.setFrequencyCh2();
     });
     $("#amplitude_setup_ch2").on("change input", function() {
