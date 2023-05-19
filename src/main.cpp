@@ -53,7 +53,7 @@ void set_generator_config()
     rp_GenAmp(RP_CH_1, AMPLITUDE_CH1.Value());
     rp_GenAmp(RP_CH_2, AMPLITUDE_CH2.Value());
 
-    //Set waveform
+    //Set waveform Channel 1
     if (WAVEFORM_CH1.Value() == 0)
     {
         rp_GenWaveform(RP_CH_1, RP_WAVEFORM_SINE);
@@ -70,12 +70,8 @@ void set_generator_config()
     {
         rp_GenWaveform(RP_CH_1, RP_WAVEFORM_DC);
     }
-    else 
-    {
-        rp_GenWaveform(RP_CH_1, RP_WAVEFORM_SQUARE);
-    }
 
-    //Set waveform
+    //Set waveform Channel 2
     if (WAVEFORM_CH2.Value() == 0)
     {
         rp_GenWaveform(RP_CH_2, RP_WAVEFORM_SINE);
@@ -92,10 +88,7 @@ void set_generator_config()
     {
         rp_GenWaveform(RP_CH_2, RP_WAVEFORM_DC);
     }
-    else
-    {
-        rp_GenWaveform(RP_CH_2, RP_WAVEFORM_SQUARE);
-    }
+    
 }
 
 
@@ -243,11 +236,12 @@ void OnNewParams(void) {
     }
     else
     {
-        rp_GenReset();
         // Set generators config
         set_generator_config();
         // Init generator
         rp_GenOutEnable(RP_CH_1);
+        // We need to generate the trigger signal to start the waveform
+        rp_GenTriggerOnly(RP_CH_1);
     }
 
     ch2State.Update();
@@ -260,6 +254,8 @@ void OnNewParams(void) {
     {
         // Init generator
         rp_GenOutEnable(RP_CH_2);
+        // We need to generate the trigger signal to start the waveform
+        rp_GenTriggerOnly(RP_CH_1);
     }
 }
 
