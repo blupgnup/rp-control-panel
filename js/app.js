@@ -268,7 +268,7 @@ $(function() {
 
        // sends current laser state to backend
        var local = {};
-       local['LED_STATE'] = { value: APP.laser_state };
+       local['LASER_STATE'] = { value: APP.laser_state };
        APP.ws.send(JSON.stringify({ parameters: local }));
     });
    
