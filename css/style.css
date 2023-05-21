@@ -149,16 +149,20 @@ body {
     margin: 0 auto;
 }
 
-#led_off {
+#laser_off,
+#ch1_off,
+#ch2_off {
     color: #F00;
 }
 
-#led_on {
+#laser_on,
+#ch1_on,
+#ch2_on {
     display: none;
     color: #0F0;
 }
 
-#led_state {
+#laser_state {
     margin-top: 20px;
     padding: 10px;
 }

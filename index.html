@@ -53,40 +53,118 @@
 			</div>
 			<div class="row justify-content-md-center">
 				<div class="col-md-3 col-md-offset-1">
+					<h2>Laser control </h2>
 					<div class="col-md-6">
-                        Switch led 0
+                        Switch laser
                         <div class="material-switch pull-right">
-                            <input id="flexSwitchLedState" name="flexSwitchLedStateOption001" type="checkbox"/>
-                            <label for="flexSwitchLedState" class="label-primary"> </label>
+                            <input id="flexSwitchLaserState" name="flexSwitchLaserStateOption001" type="checkbox"/>
+                            <label for="flexSwitchLaserState" class="label-primary"> </label>
                         </div>
                     </div>
 					<div class="col-md-6">
-						<div id='led_off'>LED Off</div>
-						<div id='led_on'>LED On</div>
+						<div id='laser_off'>Laser Off</div>
+						<div id='laser_on'>Laser On</div>
 					</div>
 
 			
 					<br>
 					<hr>
 
-					<span> Channel 1 - Amplitude</span>
+					<span> Analog output 0 (Tmod) - Amplitude</span>
 					<div id='amplitude_setup'>
-						<div>Amplitude: V</div>
+						<div>From 0 to 1.8V : <span id='amplitude_value'></span></div>
 						<input id='amplitude_set' type="range" step="0.01" size="2" value="0" min = "0" max = "1.8">
+						
 					</div>
 					<br>
-					<!-- <button id='read_button' type="button" class="btn btn-secondary">Read analog</button> -->
-					<span>Voltage : </span>
-					<span id='value'></span>
-					<br><br>
-					<div id='gain_setup'>
-						<div>Gain: <span id='gain_value'></span></div>
-						<input id='gain_set' type="range" size="2" value="1" min = "1" max = "100">
+					
+					<br>
+
+					<h2>Fast output control </h2>
+					<hr>
+
+					<div class="col-md-6" id="ch1_setup">
+                        <div id='ch1_off'>Output 1</div>
+						<div id='ch1_on'>Output 1</div>
+						
+						<div class="material-switch">
+                            <input id="flexSwitchCh1State" name="flexSwitchCh1StateOption001" type="checkbox"/>
+                            <label for="flexSwitchCh1State" class="label-primary"> </label>
+                        </div>
+						<div id='frequency_setup_ch1'>
+							<div>Frequency: <span id='frequency_value_ch1'></span>
+								<span>
+									<select size="1" id="frequency_unit_set_ch1">
+										<option selected value="1">Hz</option>
+										<option value="1e3">kHz</option>
+										<option value="1e6">MHz</option>
+									</select>
+								</span>
+							</div>
+							<input id='frequency_set_ch1' type="range" size="2" value="10" min = "1" max = "999">
+							
+						</div>
+						<div id='amplitude_setup_ch1'>
+							<div>Amplitude: <span id='amplitude_value_ch1'></span> V</div>
+							<input id='amplitude_set_ch1' type="range" step="0.01" size="2" value="0.0" min = "0" max = "1">
+						</div>
+						<div id='offset_setup_ch1'>
+							<div>Offset: <span id='offset_value_ch1'></span> V</div>
+							<input id='offset_set_ch1' type="range" step="0.01" size="2" value="0.0" min = "-1" max = "1">
+						</div>
+						<div id='waveform_setup_ch1'>
+							<div>Waveform</div>
+							<select size="1" id="waveform_set_ch1">
+								<option selected value="0">Sine</option>
+								<option value="1">Triangle</option>
+								<option value="2">Sawtooth</option>
+								<option value="3">DC</option>
+							</select>
+						</div>
+                        
+                    </div>
+					<div class="col-md-6"  id="ch2_setup">
+						<div id='ch2_off'>Output 2</div>
+						<div id='ch2_on'>Output 2</div>
+
+						<div class="material-switch">
+                            <input id="flexSwitchCh2State" name="flexSwitchCh2StateOption001" type="checkbox"/>
+                            <label for="flexSwitchCh2State" class="label-primary"> </label>
+                        </div>
+						<div id='frequency_setup_ch2'>
+							<div>
+								Frequency: <span id='frequency_value_ch2'></span>
+								<span>
+									<select size="1" id="frequency_unit_set_ch2">
+										<option selected value="1">Hz</option>
+										<option value="1e3">kHz</option>
+										<option value="1e6">MHz</option>
+									</select>
+								</span>
+							</div>
+							<input id='frequency_set_ch2' type="range" size="2" value="10" min = "1" max = "999">
+						</div>
+						<div id='amplitude_setup_ch2'>
+							<div>Amplitude: <span id='amplitude_value_ch2'></span> V</div>
+							<input id='amplitude_set_ch2' type="range" step="0.01" size="2" value="0.0" min = "0" max = "1">
+						</div>
+						<div id='offset_setup_ch2'>
+							<div>Offset: <span id='offset_value_ch2'></span> V</div>
+							<input id='offset_set_ch2' type="range" step="0.01" size="2" value="0.0" min = "-1" max = "1">
+						</div>
+						<div id='waveform_setup_ch2'>
+							<div>Waveform</div>
+							<select size="1" id="waveform_set_ch2">
+								<option selected value="0">Sine</option>
+								<option value="1">Triangle</option>
+								<option value="2">Sawtooth</option>
+								<option value="3">DC</option>
+							</select>
+						</div>
 					</div>
-					<div id='offset_setup'>
-						<div>Offset: <span id='offset_value'></span></div>
-						<input id='offset_set' type="range" size="2" value="0" min = "0" max = "5" step="0.1">
-					</div>
+
+			
+					<br>
 				
 				</div>
 				
