@@ -24,7 +24,7 @@ std::vector<float> iTec_data(SIGNAL_SIZE_DEFAULT);
 std::vector<float> iLas_data(SIGNAL_SIZE_DEFAULT);
 
 //Parameter
-CBooleanParameter laserState("LASER_STATE", CBaseParameter::RW, true, 0);
+CBooleanParameter laserState("LASER_STATE", CBaseParameter::RW, false, 0);
 CFloatParameter AMPLITUDE("AMPLITUDE", CBaseParameter::RW, 0, 0, 0, 1.8);
 CBooleanParameter CH1_UPDATED("CH1_UPDATED", CBaseParameter::RW, false, 0);
 CBooleanParameter ch1State("CH1_STATE", CBaseParameter::RW, false, 0);
