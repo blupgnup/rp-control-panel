@@ -31,12 +31,14 @@ CBooleanParameter ch1State("CH1_STATE", CBaseParameter::RW, false, 0);
 CIntParameter FREQUENCY_CH1("FREQUENCY_CH1", CBaseParameter::RW, 1, 0, 1, 50e6);
 CFloatParameter AMPLITUDE_CH1("AMPLITUDE_CH1", CBaseParameter::RW, 0.5, 0, 0, 1);
 CFloatParameter OFFSET_CH1("OFFSET_CH1", CBaseParameter::RW, 0.25, 0, -1, 1);
+CFloatParameter PHASE_CH1("PHASE_CH1", CBaseParameter::RW, 0, 0, 0, 180);
 CIntParameter WAVEFORM_CH1("WAVEFORM_CH1", CBaseParameter::RW, 0, 0, 0, 3);
 CBooleanParameter CH2_UPDATED("CH2_UPDATED", CBaseParameter::RW, false, 0);
 CBooleanParameter ch2State("CH2_STATE", CBaseParameter::RW, false, 0);
 CIntParameter FREQUENCY_CH2("FREQUENCY_CH2", CBaseParameter::RW, 1, 0, 1, 50e6);
 CFloatParameter AMPLITUDE_CH2("AMPLITUDE_CH2", CBaseParameter::RW, 0.5, 0, 0, 1);
 CFloatParameter OFFSET_CH2("OFFSET_CH2", CBaseParameter::RW, 0.25, 0, -1, 1);
+CFloatParameter PHASE_CH2("PHASE_CH2", CBaseParameter::RW, 0, 0, 0, 180);
 CIntParameter WAVEFORM_CH2("WAVEFORM_CH2", CBaseParameter::RW, 0, 0, 0, 3);
 
 
@@ -54,6 +56,10 @@ void set_generator_config()
     //Set amplitude
     rp_GenAmp(RP_CH_1, AMPLITUDE_CH1.Value());
     rp_GenAmp(RP_CH_2, AMPLITUDE_CH2.Value());
+
+    //Set phase
+    rp_GenPhase(RP_CH_1, PHASE_CH1.Value());
+    rp_GenPhase(RP_CH_2, PHASE_CH2.Value());
 
     //Set waveform Channel 1
     if (WAVEFORM_CH1.Value() == 0)

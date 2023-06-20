@@ -154,6 +154,14 @@
         APP.ws.send(JSON.stringify({ parameters: local }));
         $('#offset_value_ch1').text(APP.offset_ch1);
     };
+
+    APP.setPhaseCh1 = function() {
+        APP.phase_ch1 = $('#phase_set_ch1').val();
+        var local = {};
+        local['PHASE_CH1'] = { value: APP.phase_ch1 };
+        APP.ws.send(JSON.stringify({ parameters: local }));
+        $('#phase_value_ch1').text(APP.phase_ch1);
+    };
     
     APP.setWaveformCh1 = function() {
         APP.waveform_ch1 = $('#waveform_set_ch1').val();
@@ -188,6 +196,14 @@
         local['OFFSET_CH2'] = { value: APP.offset_ch2 };
         APP.ws.send(JSON.stringify({ parameters: local }));
         $('#offset_value_ch2').text(APP.offset_ch2);
+    };
+
+    APP.setPhaseCh2 = function() {
+        APP.phase_ch2 = $('#phase_set_ch2').val();
+        var local = {};
+        local['PHASE_CH2'] = { value: APP.phase_ch2 };
+        APP.ws.send(JSON.stringify({ parameters: local }));
+        $('#phase_value_ch2').text(APP.phase_ch2);
     };
     
     APP.setWaveformCh2 = function() {
@@ -349,6 +365,9 @@ $(function() {
     $("#offset_setup_ch1").on("change input", function() {
         APP.setOffsetCh1();
     });
+    $("#phase_setup_ch1").on("change input", function() {
+        APP.setPhaseCh1();
+    });
     $("#waveform_set_ch1").on("change input", function() {
         APP.setWaveformCh1();
     });
@@ -382,6 +401,9 @@ $(function() {
     });
     $("#offset_setup_ch2").on("change input", function() {
         APP.setOffsetCh2();
+    });
+    $("#phase_setup_ch2").on("change input", function() {
+        APP.setPhaseCh2();
     });
     $("#waveform_set_ch2").on("change input", function() {
         APP.setWaveformCh2();
