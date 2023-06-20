@@ -309,7 +309,7 @@ $(function() {
                 yaxes: [
                     { position: 'left' , min: 10, max: 35},
                     { position: 'left' , min: 10, max: 35},
-                    { position: 'right' , min: -0.5, max: 0.5},
+                    { position: 'right' , min: -0.8, max: 0.8},
                     { position: 'right' , min: 0, max: 0.100}
                 ]
     });
