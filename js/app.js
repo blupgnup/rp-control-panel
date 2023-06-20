@@ -213,6 +213,20 @@
             // Ignore empty signals
             if (new_signals[sig_name].size == 0) continue;
 
+            if (sig_name == 'TACT') {
+                $('#tAct').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1]).toFixed(1) + "°C");
+            }
+            if (sig_name == 'TSET') {
+                $('#tSet').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1]).toFixed(1) + "°C");
+            }
+            if (sig_name == 'ITEC') {
+                $('#iTec').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1]).toFixed(1) + "A");
+            }
+            if (sig_name == 'ILAS') {
+                $('#iLas').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1] * 1000).toFixed(1) + "mA");
+            }
+
+                
             var points = [];
             for (var i = 0; i < new_signals[sig_name].size; i++) {
                     points.push([i, new_signals[sig_name].value[i]]);
