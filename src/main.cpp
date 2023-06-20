@@ -229,11 +229,13 @@ void OnNewParams(void) {
     FREQUENCY_CH1.Update();
     AMPLITUDE_CH1.Update();
     OFFSET_CH1.Update();
+    PHASE_CH1.Update();
     WAVEFORM_CH1.Update();
 
     FREQUENCY_CH2.Update();
     AMPLITUDE_CH2.Update();
     OFFSET_CH2.Update();
+    PHASE_CH2.Update();
     WAVEFORM_CH2.Update();
 
     ch1State.Update();
