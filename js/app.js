@@ -1,8 +1,8 @@
 /*
- * Red Pitaya Template Application
+ * Red Pitaya Control panel Application
  *
  *
- * (c) Red Pitaya  http://www.redpitaya.com
+ * (c) Mirega  https://mirega.fr
  */
 
 
