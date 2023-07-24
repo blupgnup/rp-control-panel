@@ -110,7 +110,8 @@ const char *rp_app_desc(void)
 
 int rp_app_init(void)
 {
-    PyObject* pInt;
+    char filename[] = "python/pyemb1.py";
+    FILE* fp;
 
     fprintf(stderr, "Loading control panel application\n");
 
@@ -134,7 +135,8 @@ int rp_app_init(void)
     //Initialize the python instance
     Py_Initialize();
 
-    PyRun_SimpleString("print('Hello World from Embedded Python!!!')");
+    fp = _Py_fopen(filename, "r");
+	PyRun_SimpleFile(fp, filename);
 
     Py_Finalize();
 
