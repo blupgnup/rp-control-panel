@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <sys/sysinfo.h>
 
+#include <Python.h>
+
 #include "main.h"
 
 //Signal size
@@ -108,6 +110,8 @@ const char *rp_app_desc(void)
 
 int rp_app_init(void)
 {
+    PyObject* pInt;
+
     fprintf(stderr, "Loading control panel application\n");
 
     // Initialization of API
@@ -126,6 +130,17 @@ int rp_app_init(void)
 
     // Init generator config (without turning it on)
     set_generator_config();
+
+    //Initialize the python instance
+    Py_Initialize();
+
+    PyRun_SimpleString("print('Hello World from Embedded Python!!!')");
+
+    Py_Finalize();
+
+    //Run a simple string
+    //PyRun_SimpleString("from time import time,ctime\n"
+    //"print('Today is',ctime(time()))\n");
 	
     return 0;
 }
