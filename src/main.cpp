@@ -5,13 +5,17 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/sysinfo.h>
+#include <fstream>
+#include <iostream>
 
 #include "main.h"
 
 //Signal size
 #define SIGNAL_SIZE_DEFAULT      1024
-#define SIGNAL_UPDATE_INTERVAL      20
+#define SIGNAL_UPDATE_INTERVAL      100
 
+// ofstream object declaration to write onto file
+std::ofstream outFile;
 
 //Signal
 CFloatSignal AIN_0("AIN_0", SIGNAL_SIZE_DEFAULT, 0.0f);
@@ -53,6 +57,14 @@ int rp_app_init(void)
 
     // configure DIO7_N to output
     rp_DpinSetDirection (RP_DIO7_N, RP_OUT);
+
+    // Initialize output file
+    outFile.open("/opt/data/data.txt", std::ios::app);
+    if (!outFile) {
+        fprintf(stderr, "Error, could not open output file!\n");
+        return EXIT_FAILURE;
+    }
+    outFile << "Initialized App" << std::endl;
 	
     return 0;
 }
@@ -64,6 +76,9 @@ int rp_app_exit(void)
 
     rpApp_Release();
 	
+    // Closing data file
+    outFile.close();
+
     return 0;
 }
 
@@ -96,24 +111,36 @@ void UpdateSignals(void){
     
     //Read Ain_0 from pin 0
     rp_AIpinGetValue(0, &val);
+    // Write value to data file (without offset or gain applied)
+    std::string input = "Ain_0";
+    outFile << "Input: " << input << ", Value: " << val << std::endl;
     //Calculating and pushing it to vector
     aIn0_data.erase(aIn0_data.begin());
     aIn0_data.push_back((val * AIN_0_GAIN.Value()) + AIN_0_OFFSET.Value());
 
     //Read Ain_1 from pin 1
     rp_AIpinGetValue(1, &val);
+    // Write value to data file (without offset or gain applied)
+    //std::string input = "Ain_1";
+    //outFile << "Input: " << input << ", Value: " << val << std::endl;
     //Calculating and pushing it to vector
     aIn1_data.erase(aIn1_data.begin());
     aIn1_data.push_back(val);
 
     //Read Ain_2 from pin 2
     rp_AIpinGetValue(2, &val);
+    // Write value to data file (without offset or gain applied)
+    //std::string input = "Ain_2";
+    //outFile << "Input: " << input << ", Value: " << val << std::endl;
     //Calculating and pushing it to vector
     aIn2_data.erase(aIn2_data.begin());
     aIn2_data.push_back(val);
 
     //Read Ain_3 from pin 3
     rp_AIpinGetValue(3, &val);
+    // Write value to data file (without offset or gain applied)
+    //std::string input = "Ain_3";
+    //outFile << "Input: " << input << ", Value: " << val << std::endl;
     //Calculating and pushing it to vector
     aIn3_data.erase(aIn3_data.begin());
     aIn3_data.push_back(val);
