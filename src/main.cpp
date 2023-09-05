@@ -9,89 +9,25 @@
 #include "main.h"
 
 //Signal size
-#define SIGNAL_SIZE_DEFAULT      512
+#define SIGNAL_SIZE_DEFAULT      1024
 #define SIGNAL_UPDATE_INTERVAL      20
 
 
 //Signal
-CFloatSignal TACT("TACT", SIGNAL_SIZE_DEFAULT, 0.0f);
-CFloatSignal TSET("TSET", SIGNAL_SIZE_DEFAULT, 0.0f);
-CFloatSignal ITEC("ITEC", SIGNAL_SIZE_DEFAULT, 0.0f);
-CFloatSignal ILAS("ILAS", SIGNAL_SIZE_DEFAULT, 0.0f);
-std::vector<float> tAct_data(SIGNAL_SIZE_DEFAULT);
-std::vector<float> tSet_data(SIGNAL_SIZE_DEFAULT);
-std::vector<float> iTec_data(SIGNAL_SIZE_DEFAULT);
-std::vector<float> iLas_data(SIGNAL_SIZE_DEFAULT);
+CFloatSignal AIN_0("AIN_0", SIGNAL_SIZE_DEFAULT, 0.0f);
+CFloatSignal AIN_1("AIN_1", SIGNAL_SIZE_DEFAULT, 0.0f);
+CFloatSignal AIN_2("AIN_2", SIGNAL_SIZE_DEFAULT, 0.0f);
+CFloatSignal AIN_3("AIN_3", SIGNAL_SIZE_DEFAULT, 0.0f);
+std::vector<float> aIn0_data(SIGNAL_SIZE_DEFAULT);
+std::vector<float> aIn1_data(SIGNAL_SIZE_DEFAULT);
+std::vector<float> aIn2_data(SIGNAL_SIZE_DEFAULT);
+std::vector<float> aIn3_data(SIGNAL_SIZE_DEFAULT);
 
 //Parameter
-CBooleanParameter laserState("LASER_STATE", CBaseParameter::RW, false, 0);
-CFloatParameter AMPLITUDE("AMPLITUDE", CBaseParameter::RW, 0, 0, 0, 1.8);
-CBooleanParameter CH1_UPDATED("CH1_UPDATED", CBaseParameter::RW, false, 0);
-CBooleanParameter ch1State("CH1_STATE", CBaseParameter::RW, false, 0);
-CIntParameter FREQUENCY_CH1("FREQUENCY_CH1", CBaseParameter::RW, 1, 0, 1, 50e6);
-CFloatParameter AMPLITUDE_CH1("AMPLITUDE_CH1", CBaseParameter::RW, 0.5, 0, 0, 1);
-CFloatParameter OFFSET_CH1("OFFSET_CH1", CBaseParameter::RW, 0.25, 0, -1, 1);
-CIntParameter WAVEFORM_CH1("WAVEFORM_CH1", CBaseParameter::RW, 0, 0, 0, 3);
-CBooleanParameter CH2_UPDATED("CH2_UPDATED", CBaseParameter::RW, false, 0);
-CBooleanParameter ch2State("CH2_STATE", CBaseParameter::RW, false, 0);
-CIntParameter FREQUENCY_CH2("FREQUENCY_CH2", CBaseParameter::RW, 1, 0, 1, 50e6);
-CFloatParameter AMPLITUDE_CH2("AMPLITUDE_CH2", CBaseParameter::RW, 0.5, 0, 0, 1);
-CFloatParameter OFFSET_CH2("OFFSET_CH2", CBaseParameter::RW, 0.25, 0, -1, 1);
-CIntParameter WAVEFORM_CH2("WAVEFORM_CH2", CBaseParameter::RW, 0, 0, 0, 3);
-
-
-// Generator config
-void set_generator_config()
-{
-    //Set frequency
-    rp_GenFreq(RP_CH_1, FREQUENCY_CH1.Value());
-    rp_GenFreq(RP_CH_2, FREQUENCY_CH2.Value());
-
-    //Set offset
-    rp_GenOffset(RP_CH_1, OFFSET_CH1.Value());
-    rp_GenOffset(RP_CH_2, OFFSET_CH2.Value());
-
-    //Set amplitude
-    rp_GenAmp(RP_CH_1, AMPLITUDE_CH1.Value());
-    rp_GenAmp(RP_CH_2, AMPLITUDE_CH2.Value());
-
-    //Set waveform Channel 1
-    if (WAVEFORM_CH1.Value() == 0)
-    {
-        rp_GenWaveform(RP_CH_1, RP_WAVEFORM_SINE);
-    }
-    else if (WAVEFORM_CH1.Value() == 1)
-    {
-        rp_GenWaveform(RP_CH_1, RP_WAVEFORM_TRIANGLE);
-    }
-    else if (WAVEFORM_CH1.Value() == 2)
-    {
-        rp_GenWaveform(RP_CH_1, RP_WAVEFORM_RAMP_UP);
-    }
-    else if (WAVEFORM_CH1.Value() == 3)
-    {
-        rp_GenWaveform(RP_CH_1, RP_WAVEFORM_DC);
-    }
-
-    //Set waveform Channel 2
-    if (WAVEFORM_CH2.Value() == 0)
-    {
-        rp_GenWaveform(RP_CH_2, RP_WAVEFORM_SINE);
-    }
-    else if (WAVEFORM_CH2.Value() == 1)
-    {
-        rp_GenWaveform(RP_CH_2, RP_WAVEFORM_TRIANGLE);
-    }
-    else if (WAVEFORM_CH2.Value() == 2)
-    {
-        rp_GenWaveform(RP_CH_2, RP_WAVEFORM_RAMP_UP);
-    }
-    else if (WAVEFORM_CH2.Value() == 3)
-    {
-        rp_GenWaveform(RP_CH_2, RP_WAVEFORM_DC);
-    }
-    
-}
+CBooleanParameter gpioState("GPIO_STATE", CBaseParameter::RW, false, 0);
+CFloatParameter AOUT_0_AMPLITUDE("AMPLITUDE", CBaseParameter::RW, 0, 0, 0, 1.8);
+CIntParameter AIN_0_GAIN("GAIN", CBaseParameter::RW, 1, 0, 1, 100);
+CFloatParameter AIN_0_OFFSET("OFFSET", CBaseParameter::RW, 0.0, 0, 0.0, 5.0);
 
 
 const char *rp_app_desc(void)
@@ -117,9 +53,6 @@ int rp_app_init(void)
 
     // configure DIO7_N to output
     rp_DpinSetDirection (RP_DIO7_N, RP_OUT);
-
-    // Init generator config (without turning it on)
-    set_generator_config();
 	
     return 0;
 }
@@ -157,43 +90,41 @@ void UpdateSignals(void){
 	float val;
     
 	// Update analog pin value
-	rp_AOpinSetValue(0, AMPLITUDE.Value());
+	rp_AOpinSetValue(0, AOUT_0_AMPLITUDE.Value());
 	
     // Read values from analog input and convert to physical values
     
-    //Read Tact from pin 0
+    //Read Ain_0 from pin 0
     rp_AIpinGetValue(0, &val);
     //Calculating and pushing it to vector
-    //rTh_data.erase(rTh_data.begin());
-    //rTh_data.push_back((10 * (10 - val) / (5 * val)));
-    tAct_data.erase(tAct_data.begin());
-    tAct_data.push_back((25/4 * val) + 10);
+    aIn0_data.erase(aIn0_data.begin());
+    aIn0_data.push_back((val * AIN_0_GAIN.Value()) + AIN_0_OFFSET.Value());
 
-    //Read Tset from pin 1
+    //Read Ain_1 from pin 1
     rp_AIpinGetValue(1, &val);
     //Calculating and pushing it to vector
-    tSet_data.erase(tSet_data.begin());
-    tSet_data.push_back((25/4 * val) + 10);  // We convert VtSet to tSet same as tAct
+    aIn1_data.erase(aIn1_data.begin());
+    aIn1_data.push_back(val);
 
-    //Read Itec from pin 2
+    //Read Ain_2 from pin 2
     rp_AIpinGetValue(2, &val);
     //Calculating and pushing it to vector
-    iTec_data.erase(iTec_data.begin());
-    iTec_data.push_back( 1 * (val - 2.5));
+    aIn2_data.erase(aIn2_data.begin());
+    aIn2_data.push_back(val);
 
-    //Read Ilas from pin 3
+    //Read Ain_3 from pin 3
     rp_AIpinGetValue(3, &val);
     //Calculating and pushing it to vector
-    iLas_data.erase(iLas_data.begin());
-    iLas_data.push_back( 0.05 * val);
+    aIn3_data.erase(aIn3_data.begin());
+    aIn3_data.push_back(val);
 
     //Write data to signal
     for(int i = 0; i < SIGNAL_SIZE_DEFAULT; i++) 
     {
-        TACT[i] = tAct_data[i];
-        TSET[i] = tSet_data[i];
-        ITEC[i] = iTec_data[i];
-        ILAS[i] = iLas_data[i];
+        AIN_0[i] = aIn0_data[i];
+        AIN_1[i] = aIn1_data[i];
+        AIN_2[i] = aIn2_data[i];
+        AIN_3[i] = aIn3_data[i];
     }
 }
 
@@ -202,10 +133,10 @@ void UpdateParams(void){}
 
 
 void OnNewParams(void) {
-	laserState.Update();
+	gpioState.Update();
 	
-	// If laserState on, we switch the laser state
-	if (laserState.Value() == false)
+	// If gpioStage on, we switch the laser state
+	if (gpioState.Value() == false)
 	{
         rp_DpinSetState (RP_DIO7_N, RP_LOW);
         // We also switch on the led 0 as an indicator
@@ -218,65 +149,9 @@ void OnNewParams(void) {
 		rp_DpinSetState(RP_LED0, RP_HIGH);
 	}
 	
-	AMPLITUDE.Update();
-
-    FREQUENCY_CH1.Update();
-    AMPLITUDE_CH1.Update();
-    OFFSET_CH1.Update();
-    WAVEFORM_CH1.Update();
-
-    FREQUENCY_CH2.Update();
-    AMPLITUDE_CH2.Update();
-    OFFSET_CH2.Update();
-    WAVEFORM_CH2.Update();
-
-    ch1State.Update();
-    // If Channel 1 is on, we switch the channel 1
-	if (ch1State.Value() == false)
-	{
-        rp_GenOutDisable(RP_CH_1);
-    }
-    else
-    {
-        CH1_UPDATED.Update();
-        // We update generator config only is some change is reported
-        if (CH1_UPDATED.Value() == true)
-        {
-            // Set generators config
-            set_generator_config();
-            // Init generator
-            rp_GenOutEnable(RP_CH_1);
-            // We need to generate the trigger signal to start the waveform
-            rp_GenTriggerOnly(RP_CH_1);
-
-            CH1_UPDATED.Value() = false;
-        }
-        
-    }
-
-    ch2State.Update();
-    // If Channel 2 is on, we switch the channel 2
-	if (ch2State.Value() == false)
-	{
-        rp_GenOutDisable(RP_CH_2);
-    }
-    else
-    {
-        CH2_UPDATED.Update();
-        // We update generator config only is some change is reported
-        if (CH2_UPDATED.Value() == true)
-        {
-            // Set generators config
-            set_generator_config();
-            // Init generator
-            rp_GenOutEnable(RP_CH_2);
-            // We need to generate the trigger signal to start the waveform
-            rp_GenTriggerOnly(RP_CH_2);
-
-            CH2_UPDATED.Value() = false;
-        }
-        
-    }
+	AOUT_0_AMPLITUDE.Update();
+    AIN_0_GAIN.Update();
+    AIN_0_OFFSET.Update();
 }
 
 
