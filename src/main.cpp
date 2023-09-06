@@ -7,6 +7,9 @@
 #include <sys/sysinfo.h>
 #include <fstream>
 #include <iostream>
+#include <chrono>  // chrono::system_clock
+#include <ctime>   // localtime
+#include <iomanip> // put_time
 
 #include "main.h"
 
@@ -59,12 +62,12 @@ int rp_app_init(void)
     rp_DpinSetDirection (RP_DIO7_N, RP_OUT);
 
     // Initialize output file
-    outFile.open("/opt/data/data.txt", std::ios::app);
+    outFile.open("/opt/data/data.csv", std::ios::app);
     if (!outFile) {
         fprintf(stderr, "Error, could not open output file!\n");
         return EXIT_FAILURE;
     }
-    outFile << "Initialized App" << std::endl;
+    outFile << "Timestamp,Input,Value" << std::endl;
 	
     return 0;
 }
@@ -113,7 +116,10 @@ void UpdateSignals(void){
     rp_AIpinGetValue(0, &val);
     // Write value to data file (without offset or gain applied)
     std::string input = "Ain_0";
-    outFile << "Input: " << input << ", Value: " << val << std::endl;
+	// Get timestamp
+	auto now = std::chrono::system_clock::now();
+    auto in_time_t = std::chrono::system_clock::to_time_t(now);
+    outFile << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << "," << input << "," << val << std::endl;
     //Calculating and pushing it to vector
     aIn0_data.erase(aIn0_data.begin());
     aIn0_data.push_back((val * AIN_0_GAIN.Value()) + AIN_0_OFFSET.Value());
