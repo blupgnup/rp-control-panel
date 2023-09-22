@@ -160,7 +160,20 @@
 
             // Ignore empty signals
             if (new_signals[sig_name].size == 0) continue;
-
+			
+			if (sig_name == 'AIN_0') {
+                $('#aIN_0').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1]).toFixed(3) + "V");
+            }
+            if (sig_name == 'AIN_1') {
+                $('#aIN_1').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1]).toFixed(2) + "V");
+            }
+            if (sig_name == 'AIN_2') {
+                $('#aIN_2').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1]).toFixed(2) + "V");
+            }
+            if (sig_name == 'AIN_3') {
+                $('#aIN_3').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1]).toFixed(2) + "V");
+            }
+			
             var points = [];
             for (var i = 0; i < new_signals[sig_name].size; i++) {
                     points.push([i, new_signals[sig_name].value[i]]);
