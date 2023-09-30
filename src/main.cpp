@@ -11,6 +11,9 @@
 #include <ctime>   // localtime
 #include <iomanip> // put_time
 
+// Include library for HDC20X0 sensor
+#include "rp-hdc20x0.h"
+
 #include "main.h"
 
 //Signal size
@@ -29,6 +32,11 @@ std::vector<float> aIn0_data(SIGNAL_SIZE_DEFAULT);
 std::vector<float> aIn1_data(SIGNAL_SIZE_DEFAULT);
 std::vector<float> aIn2_data(SIGNAL_SIZE_DEFAULT);
 std::vector<float> aIn3_data(SIGNAL_SIZE_DEFAULT);
+
+CFloatSignal TEMP("TEMP", SIGNAL_SIZE_DEFAULT, 0.0f);
+CFloatSignal RH("RH", SIGNAL_SIZE_DEFAULT, 0.0f);
+std::vector<float> temp_data(SIGNAL_SIZE_DEFAULT);
+std::vector<float> rh_data(SIGNAL_SIZE_DEFAULT);
 
 //Parameter
 CBooleanParameter gpioState("GPIO_STATE", CBaseParameter::RW, false, 0);
@@ -69,6 +77,12 @@ int rp_app_init(void)
     }
     outFile << "Timestamp,Input,Value" << std::endl;
 	
+    if(setup_hdc20x0() != 0 )
+    {
+        fprintf(stderr, "Failed to init temperature sensor");
+        return EXIT_FAILURE;
+    }
+
     return 0;
 }
 
@@ -106,6 +120,7 @@ int rp_get_signals(float ***s, int *sig_num, int *sig_len)
 
 void UpdateSignals(void){
 	float val;
+	float temperature, humidity;
     
 	// Update analog pin value
 	rp_AOpinSetValue(0, AOUT_0_AMPLITUDE.Value());
@@ -119,7 +134,7 @@ void UpdateSignals(void){
 	// Get timestamp
 	auto now = std::chrono::system_clock::now();
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
-    outFile << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << "," << input << "," << val << std::endl;
+    //outFile << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << "," << input << "," << val << std::endl;
     //Calculating and pushing it to vector
     aIn0_data.erase(aIn0_data.begin());
     aIn0_data.push_back((val * AIN_0_GAIN.Value()) + AIN_0_OFFSET.Value());
@@ -151,6 +166,17 @@ void UpdateSignals(void){
     aIn3_data.erase(aIn3_data.begin());
     aIn3_data.push_back(val);
 
+	if(read_from_hdc20x0(&temperature, &humidity) == 0) {
+		outFile << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << ",Temp," << temperature << ",RH," << humidity << std::endl;
+		temp_data.erase(temp_data.begin());
+		temp_data.push_back(temperature);
+		rh_data.erase(rh_data.begin());
+		rh_data.push_back(humidity);
+	}
+	else {
+		fprintf(stderr, "Error, could not read temperature!\n");
+	}
+
     //Write data to signal
     for(int i = 0; i < SIGNAL_SIZE_DEFAULT; i++) 
     {
@@ -158,6 +184,8 @@ void UpdateSignals(void){
         AIN_1[i] = aIn1_data[i];
         AIN_2[i] = aIn2_data[i];
         AIN_3[i] = aIn3_data[i];
+		TEMP[i] = temp_data[i];
+		RH[i] = rh_data[i];
     }
 }
 

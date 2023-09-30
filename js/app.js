@@ -173,6 +173,12 @@
             if (sig_name == 'AIN_3') {
                 $('#aIN_3').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1]).toFixed(2) + "V");
             }
+			if (sig_name == 'TEMP') {
+                $('#temp').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1]).toFixed(2) + "°C");
+            }
+			if (sig_name == 'RH') {
+                $('#rh').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1]).toFixed(2) + "%");
+            }
 			
             var points = [];
             for (var i = 0; i < new_signals[sig_name].size; i++) {
@@ -257,7 +263,9 @@ $(function() {
                     { position: 'right', min: 0, max: 3.3},
                     { position: 'right' , show: false, min: 0, max: 3.3},
                     { position: 'right' , show: false, min: 0, max: 3.3},
-                    { position: 'right' , show: false, min: 0, max: 3.3}
+                    { position: 'right' , show: false, min: 0, max: 3.3},
+					//{ position: 'left', min: 18, max: 28},
+					//{ position: 'left', min: 30, max: 60}
                 ]
     });
 		
