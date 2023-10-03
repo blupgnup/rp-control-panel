@@ -53,15 +53,15 @@
 			<div class="row justify-content-md-center">
 				<div class="col-md-3 col-md-offset-1">
 					<h2>Control</h2>
-					<h3>DIO7_N </h3>
-					<div class="col-md-6">
-                        Switch GPIO
+					<h3>Switch laser </h3>
+					<div class="col-md-6 col-md-offset-2">
+                        Laser enable
                         <div class="material-switch pull-right">
                             <input id="flexSwitchGpioState" name="flexSwitchGpioStateOption001" type="checkbox"/>
                             <label for="flexSwitchGpioState" class="label-primary"> </label>
                         </div>
                     </div>
-					<div class="col-md-6">
+					<div class="col-md-2">
 						<div id='gpio_off'>Off</div>
 						<div id='gpio_on'>On</div>
 					</div>
@@ -71,7 +71,7 @@
 					<hr>
 
 					<h3>Analog output</h3>
-					<span> Analog output 0 - Amplitude</span>
+					<span> Analog output 0 (Tmod) - Amplitude</span>
 					<div id='amplitude_setup'>
 						<div>From 0 to 1.8V : <span id='amplitude_value'></span></div>
 						<input id='amplitude_set' type="range" step="0.01" size="2" value="0" min = "0" max = "1.8">
