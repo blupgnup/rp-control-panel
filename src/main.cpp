@@ -39,10 +39,80 @@ std::vector<float> temp_data(SIGNAL_SIZE_DEFAULT);
 std::vector<float> rh_data(SIGNAL_SIZE_DEFAULT);
 
 //Parameter
-CBooleanParameter gpioState("GPIO_STATE", CBaseParameter::RW, false, 0);
-CFloatParameter AOUT_0_AMPLITUDE("AMPLITUDE", CBaseParameter::RW, 0, 0, 0, 1.8);
-CIntParameter AIN_0_GAIN("GAIN", CBaseParameter::RW, 1, 0, 1, 100);
-CFloatParameter AIN_0_OFFSET("OFFSET", CBaseParameter::RW, 0.0, 0, 0.0, 5.0);
+CBooleanParameter laserState("LASER_STATE", CBaseParameter::RW, false, 0);
+CFloatParameter AMPLITUDE("AMPLITUDE", CBaseParameter::RW, 0, 0, 0, 1.8);
+CBooleanParameter CH1_UPDATED("CH1_UPDATED", CBaseParameter::RW, false, 0);
+CBooleanParameter ch1State("CH1_STATE", CBaseParameter::RW, false, 0);
+CIntParameter FREQUENCY_CH1("FREQUENCY_CH1", CBaseParameter::RW, 1, 0, 1, 50e6);
+CFloatParameter AMPLITUDE_CH1("AMPLITUDE_CH1", CBaseParameter::RW, 0.5, 0, 0, 1);
+CFloatParameter OFFSET_CH1("OFFSET_CH1", CBaseParameter::RW, 0.25, 0, -1, 1);
+CFloatParameter PHASE_CH1("PHASE_CH1", CBaseParameter::RW, 0, 0, 0, 180);
+CIntParameter WAVEFORM_CH1("WAVEFORM_CH1", CBaseParameter::RW, 0, 0, 0, 3);
+CBooleanParameter CH2_UPDATED("CH2_UPDATED", CBaseParameter::RW, false, 0);
+CBooleanParameter ch2State("CH2_STATE", CBaseParameter::RW, false, 0);
+CIntParameter FREQUENCY_CH2("FREQUENCY_CH2", CBaseParameter::RW, 1, 0, 1, 50e6);
+CFloatParameter AMPLITUDE_CH2("AMPLITUDE_CH2", CBaseParameter::RW, 0.5, 0, 0, 1);
+CFloatParameter OFFSET_CH2("OFFSET_CH2", CBaseParameter::RW, 0.25, 0, -1, 1);
+CFloatParameter PHASE_CH2("PHASE_CH2", CBaseParameter::RW, 0, 0, 0, 180);
+CIntParameter WAVEFORM_CH2("WAVEFORM_CH2", CBaseParameter::RW, 0, 0, 0, 3);
+
+
+// Generator config
+void set_generator_config()
+{
+    //Set frequency
+    rp_GenFreq(RP_CH_1, FREQUENCY_CH1.Value());
+    rp_GenFreq(RP_CH_2, FREQUENCY_CH2.Value());
+
+    //Set offset
+    rp_GenOffset(RP_CH_1, OFFSET_CH1.Value());
+    rp_GenOffset(RP_CH_2, OFFSET_CH2.Value());
+
+    //Set amplitude
+    rp_GenAmp(RP_CH_1, AMPLITUDE_CH1.Value());
+    rp_GenAmp(RP_CH_2, AMPLITUDE_CH2.Value());
+
+    //Set phase
+    rp_GenPhase(RP_CH_1, PHASE_CH1.Value());
+    rp_GenPhase(RP_CH_2, PHASE_CH2.Value());
+
+    //Set waveform Channel 1
+    if (WAVEFORM_CH1.Value() == 0)
+    {
+        rp_GenWaveform(RP_CH_1, RP_WAVEFORM_SINE);
+    }
+    else if (WAVEFORM_CH1.Value() == 1)
+    {
+        rp_GenWaveform(RP_CH_1, RP_WAVEFORM_TRIANGLE);
+    }
+    else if (WAVEFORM_CH1.Value() == 2)
+    {
+        rp_GenWaveform(RP_CH_1, RP_WAVEFORM_RAMP_UP);
+    }
+    else if (WAVEFORM_CH1.Value() == 3)
+    {
+        rp_GenWaveform(RP_CH_1, RP_WAVEFORM_DC);
+    }
+
+    //Set waveform Channel 2
+    if (WAVEFORM_CH2.Value() == 0)
+    {
+        rp_GenWaveform(RP_CH_2, RP_WAVEFORM_SINE);
+    }
+    else if (WAVEFORM_CH2.Value() == 1)
+    {
+        rp_GenWaveform(RP_CH_2, RP_WAVEFORM_TRIANGLE);
+    }
+    else if (WAVEFORM_CH2.Value() == 2)
+    {
+        rp_GenWaveform(RP_CH_2, RP_WAVEFORM_RAMP_UP);
+    }
+    else if (WAVEFORM_CH2.Value() == 3)
+    {
+        rp_GenWaveform(RP_CH_2, RP_WAVEFORM_DC);
+    }
+    
+}
 
 
 const char *rp_app_desc(void)
@@ -119,63 +189,52 @@ int rp_get_signals(float ***s, int *sig_num, int *sig_len)
 
 
 void UpdateSignals(void){
-	float val;
-	float temperature, humidity;
-    
-	// Update analog pin value
-	rp_AOpinSetValue(0, AOUT_0_AMPLITUDE.Value());
+    float val;
+    float temperature, humidity;
+
+    // Update analog pin value
+    rp_AOpinSetValue(0, AOUT_0_AMPLITUDE.Value());
 	
     // Read values from analog input and convert to physical values
     
-    //Read Ain_0 from pin 0
+    // Read values from analog input and convert to physical values
+    
+    //Read Tact from pin 0
     rp_AIpinGetValue(0, &val);
-    // Write value to data file (without offset or gain applied)
-    std::string input = "Ain_0";
-	// Get timestamp
-	auto now = std::chrono::system_clock::now();
-    auto in_time_t = std::chrono::system_clock::to_time_t(now);
-    //outFile << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << "," << input << "," << val << std::endl;
     //Calculating and pushing it to vector
-    aIn0_data.erase(aIn0_data.begin());
-    aIn0_data.push_back((val * AIN_0_GAIN.Value()) + AIN_0_OFFSET.Value());
+    //rTh_data.erase(rTh_data.begin());
+    //rTh_data.push_back((10 * (10 - val) / (5 * val)));
+    tAct_data.erase(tAct_data.begin());
+    tAct_data.push_back((25/4 * val) + 10);
 
-    //Read Ain_1 from pin 1
+    //Read Tset from pin 1
     rp_AIpinGetValue(1, &val);
-    // Write value to data file (without offset or gain applied)
-    //std::string input = "Ain_1";
-    //outFile << "Input: " << input << ", Value: " << val << std::endl;
     //Calculating and pushing it to vector
-    aIn1_data.erase(aIn1_data.begin());
-    aIn1_data.push_back(val);
+    tSet_data.erase(tSet_data.begin());
+    tSet_data.push_back((25/4 * val) + 10);  // We convert VtSet to tSet same as tAct
 
-    //Read Ain_2 from pin 2
+    //Read Itec from pin 2
     rp_AIpinGetValue(2, &val);
-    // Write value to data file (without offset or gain applied)
-    //std::string input = "Ain_2";
-    //outFile << "Input: " << input << ", Value: " << val << std::endl;
     //Calculating and pushing it to vector
-    aIn2_data.erase(aIn2_data.begin());
-    aIn2_data.push_back(val);
+    iTec_data.erase(iTec_data.begin());
+    iTec_data.push_back( 1 * (val - 2.5));
 
-    //Read Ain_3 from pin 3
+    //Read Ilas from pin 3
     rp_AIpinGetValue(3, &val);
-    // Write value to data file (without offset or gain applied)
-    //std::string input = "Ain_3";
-    //outFile << "Input: " << input << ", Value: " << val << std::endl;
     //Calculating and pushing it to vector
-    aIn3_data.erase(aIn3_data.begin());
-    aIn3_data.push_back(val);
+    iLas_data.erase(iLas_data.begin());
+    iLas_data.push_back( 0.05 * val);
 
-	if(read_from_hdc20x0(&temperature, &humidity) == 0) {
-		outFile << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << ",Temp," << temperature << ",RH," << humidity << std::endl;
-		temp_data.erase(temp_data.begin());
-		temp_data.push_back(temperature);
-		rh_data.erase(rh_data.begin());
-		rh_data.push_back(humidity);
-	}
-	else {
-		fprintf(stderr, "Error, could not read temperature!\n");
-	}
+    if(read_from_hdc20x0(&temperature, &humidity) == 0) {
+      outFile << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << ",Temp," << temperature << ",RH," << humidity << std::endl;
+      temp_data.erase(temp_data.begin());
+      temp_data.push_back(temperature);
+      rh_data.erase(rh_data.begin());
+      rh_data.push_back(humidity);
+    }
+    else {
+      fprintf(stderr, "Error, could not read temperature!\n");
+    }
 
     //Write data to signal
     for(int i = 0; i < SIGNAL_SIZE_DEFAULT; i++) 
@@ -184,8 +243,8 @@ void UpdateSignals(void){
         AIN_1[i] = aIn1_data[i];
         AIN_2[i] = aIn2_data[i];
         AIN_3[i] = aIn3_data[i];
-		TEMP[i] = temp_data[i];
-		RH[i] = rh_data[i];
+		    TEMP[i] = temp_data[i];
+		    RH[i] = rh_data[i];
     }
 }
 
@@ -194,25 +253,83 @@ void UpdateParams(void){}
 
 
 void OnNewParams(void) {
-	gpioState.Update();
-	
-	// If gpioStage on, we switch the laser state
-	if (gpioState.Value() == false)
-	{
-        rp_DpinSetState (RP_DIO7_N, RP_LOW);
-        // We also switch on the led 0 as an indicator
-		rp_DpinSetState(RP_LED0, RP_LOW);
-	}
-	else
-	{
-        rp_DpinSetState (RP_DIO7_N, RP_HIGH);
-        // And switching off the led 0
-		rp_DpinSetState(RP_LED0, RP_HIGH);
-	}
-	
-	AOUT_0_AMPLITUDE.Update();
-    AIN_0_GAIN.Update();
-    AIN_0_OFFSET.Update();
+    laserState.Update();
+
+    // If laserState on, we switch the laser state
+    if (laserState.Value() == false)
+    {
+          rp_DpinSetState (RP_DIO7_N, RP_LOW);
+          // We also switch on the led 0 as an indicator
+      rp_DpinSetState(RP_LED0, RP_LOW);
+    }
+    else
+    {
+          rp_DpinSetState (RP_DIO7_N, RP_HIGH);
+          // And switching off the led 0
+      rp_DpinSetState(RP_LED0, RP_HIGH);
+    }
+
+    AMPLITUDE.Update();
+
+    FREQUENCY_CH1.Update();
+    AMPLITUDE_CH1.Update();
+    OFFSET_CH1.Update();
+    PHASE_CH1.Update();
+    WAVEFORM_CH1.Update();
+
+    FREQUENCY_CH2.Update();
+    AMPLITUDE_CH2.Update();
+    OFFSET_CH2.Update();
+    PHASE_CH2.Update();
+    WAVEFORM_CH2.Update();
+
+    ch1State.Update();
+    // If Channel 1 is on, we switch the channel 1
+    if (ch1State.Value() == false)
+    {
+        rp_GenOutDisable(RP_CH_1);
+    }
+    else
+    {
+        CH1_UPDATED.Update();
+        // We update generator config only is some change is reported
+        if (CH1_UPDATED.Value() == true)
+        {
+            // Set generators config
+            set_generator_config();
+            // Init generator
+            rp_GenOutEnable(RP_CH_1);
+            // We need to generate the trigger signal to start the waveform
+            rp_GenTriggerOnly(RP_CH_1);
+
+            CH1_UPDATED.Value() = false;
+        }
+
+    }
+
+    ch2State.Update();
+    // If Channel 2 is on, we switch the channel 2
+    if (ch2State.Value() == false)
+    {
+        rp_GenOutDisable(RP_CH_2);
+    }
+    else
+    {
+        CH2_UPDATED.Update();
+        // We update generator config only is some change is reported
+        if (CH2_UPDATED.Value() == true)
+        {
+            // Set generators config
+            set_generator_config();
+            // Init generator
+            rp_GenOutEnable(RP_CH_2);
+            // We need to generate the trigger signal to start the waveform
+            rp_GenTriggerOnly(RP_CH_2);
+
+            CH2_UPDATED.Value() = false;
+        }
+        
+    }
 }
 
 

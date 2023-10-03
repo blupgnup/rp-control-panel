@@ -1,10 +1,9 @@
 <!-- 
  *
- * Red Pitaya Test Application
- * Based on the generic template application (v0.94)
+ * Red Pitaya Control panel Application
  *
  *
- * (c) Red Pitaya  http://www.redpitaya.com
+ * (c) Mirega  https://mirega.fr
  *
 -->
 
@@ -79,15 +78,98 @@
 						
 					</div>
 					<br>
+					
+					<br>
 
-					<h3>Gain and offset of analog input 0 </h3>
-					<div id='gain_setup'>
-						<div>Gain: <span id='gain_value'></span></div>
-						<input id='gain_set' type="range" size="2" value="1" min = "1" max = "100">
-					</div>
-					<div id='offset_setup'>
-						<div>Offset: <span id='offset_value'></span></div>
-						<input id='offset_set' type="range" size="2" value="0" min = "0" max = "5" step="0.1">
+					<h2>Fast output control </h2>
+					<hr>
+
+					<div class="col-md-6" id="ch1_setup">
+                        <div id='ch1_off'>Output 1</div>
+						<div id='ch1_on'>Output 1</div>
+						
+						<div class="material-switch">
+                            <input id="flexSwitchCh1State" name="flexSwitchCh1StateOption001" type="checkbox"/>
+                            <label for="flexSwitchCh1State" class="label-primary"> </label>
+                        </div>
+						<div id='frequency_setup_ch1'>
+							<div>Frequency: <span id='frequency_value_ch1'></span>
+								<span>
+									<select size="1" id="frequency_unit_set_ch1">
+										<option selected value="1">Hz</option>
+										<option value="1e3">kHz</option>
+										<option value="1e6">MHz</option>
+									</select>
+								</span>
+							</div>
+							<input id='frequency_set_ch1' type="range" size="2" value="10" min = "1" max = "999">
+							
+						</div>
+						<div id='amplitude_setup_ch1'>
+							<div>Amplitude: <span id='amplitude_value_ch1'></span> V</div>
+							<input id='amplitude_set_ch1' type="range" step="0.005" size="2" value="0.0" min = "0" max = "1">
+						</div>
+						<div id='offset_setup_ch1'>
+							<div>Offset: <span id='offset_value_ch1'></span> V</div>
+							<input id='offset_set_ch1' type="range" step="0.005" size="2" value="0.0" min = "-1" max = "1">
+						</div>
+						<div id='phase_setup_ch1'>
+							<div>Phase: <span id='phase_value_ch1'></span> °</div>
+							<input id='phase_set_ch1' type="range" step="1" size="2" value="0" min = "0" max = "180">
+						</div>
+						<div id='waveform_setup_ch1'>
+							<div>Waveform</div>
+							<select size="1" id="waveform_set_ch1">
+								<option selected value="0">Sine</option>
+								<option value="1">Triangle</option>
+								<option value="2">Sawtooth</option>
+								<option value="3">DC</option>
+							</select>
+						</div>
+                        
+                    </div>
+					<div class="col-md-6"  id="ch2_setup">
+						<div id='ch2_off'>Output 2</div>
+						<div id='ch2_on'>Output 2</div>
+
+						<div class="material-switch">
+                            <input id="flexSwitchCh2State" name="flexSwitchCh2StateOption001" type="checkbox"/>
+                            <label for="flexSwitchCh2State" class="label-primary"> </label>
+                        </div>
+						<div id='frequency_setup_ch2'>
+							<div>
+								Frequency: <span id='frequency_value_ch2'></span>
+								<span>
+									<select size="1" id="frequency_unit_set_ch2">
+										<option selected value="1">Hz</option>
+										<option value="1e3">kHz</option>
+										<option value="1e6">MHz</option>
+									</select>
+								</span>
+							</div>
+							<input id='frequency_set_ch2' type="range" size="2" value="10" min = "1" max = "999">
+						</div>
+						<div id='amplitude_setup_ch2'>
+							<div>Amplitude: <span id='amplitude_value_ch2'></span> V</div>
+							<input id='amplitude_set_ch2' type="range" step="0.005" size="2" value="0.0" min = "0" max = "1">
+						</div>
+						<div id='offset_setup_ch2'>
+							<div>Offset: <span id='offset_value_ch2'></span> V</div>
+							<input id='offset_set_ch2' type="range" step="0.005" size="2" value="0.0" min = "-1" max = "1">
+						</div>
+						<div id='phase_setup_ch2'>
+							<div>Phase: <span id='phase_value_ch2'></span> °</div>
+							<input id='phase_set_ch2' type="range" step="1" size="2" value="0" min = "0" max = "180">
+						</div>
+						<div id='waveform_setup_ch2'>
+							<div>Waveform</div>
+							<select size="1" id="waveform_set_ch2">
+								<option selected value="0">Sine</option>
+								<option value="1">Triangle</option>
+								<option value="2">Sawtooth</option>
+								<option value="3">DC</option>
+							</select>
+						</div>
 					</div>
 
 					<br>
@@ -102,18 +184,22 @@
 				<div class="col-md-6 col-md-offset-1">
 					<div id='placeholder'></div>
 					<br>
-					
+
 					<div class="text-center">
-						Ain_0 : <span id='aIN_0'> </span>
-						 / Ain_1 : <span id='aIN_1'> </span>
-						 / Ain_2 : <span id='aIN_2'> </span>
-						 / Ain_3 : <span id='aIN_3'> </span>
-				   </div>
-				   <div class="text-center">
+						Tact : <span id='tAct'> </span>
+						 / Tset : <span id='tSet'> </span>
+						 / iTec : <span id='iTec'> </span>
+				  </div>
+				  <div class="text-center">
+						iLas : <span id='iLas'> </span>
+					</div>
+				  <div class="text-center">
 						Temperature : <span id='temp'> </span>
 						 / Humidity : <span id='rh'> </span>
-				   </div>
-				</div>			
+				  </div>
+				</div>	
+									
+				
 			</div>
 		</div>
 	</div>
