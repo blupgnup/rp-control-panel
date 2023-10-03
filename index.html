@@ -52,24 +52,26 @@
 			</div>
 			<div class="row justify-content-md-center">
 				<div class="col-md-3 col-md-offset-1">
-					<h2>Laser control </h2>
+					<h2>Control</h2>
+					<h3>DIO7_N </h3>
 					<div class="col-md-6">
-                        Switch laser
+                        Switch GPIO
                         <div class="material-switch pull-right">
-                            <input id="flexSwitchLaserState" name="flexSwitchLaserStateOption001" type="checkbox"/>
-                            <label for="flexSwitchLaserState" class="label-primary"> </label>
+                            <input id="flexSwitchGpioState" name="flexSwitchGpioStateOption001" type="checkbox"/>
+                            <label for="flexSwitchGpioState" class="label-primary"> </label>
                         </div>
                     </div>
 					<div class="col-md-6">
-						<div id='laser_off'>Laser Off</div>
-						<div id='laser_on'>Laser On</div>
+						<div id='gpio_off'>Off</div>
+						<div id='gpio_on'>On</div>
 					</div>
 
 			
 					<br>
 					<hr>
 
-					<span> Analog output 0 (Tmod) - Amplitude</span>
+					<h3>Analog output</h3>
+					<span> Analog output 0 - Amplitude</span>
 					<div id='amplitude_setup'>
 						<div>From 0 to 1.8V : <span id='amplitude_value'></span></div>
 						<input id='amplitude_set' type="range" step="0.01" size="2" value="0" min = "0" max = "1.8">
@@ -170,7 +172,6 @@
 						</div>
 					</div>
 
-			
 					<br>
 				
 				</div>
@@ -188,13 +189,16 @@
 						Tact : <span id='tAct'> </span>
 						 / Tset : <span id='tSet'> </span>
 						 / iTec : <span id='iTec'> </span>
-				   </div>
-				   <div class="text-center">
+				  </div>
+				  <div class="text-center">
 						iLas : <span id='iLas'> </span>
 					</div>
-					
+				  <div class="text-center">
+						Temperature : <span id='temp'> </span>
+						 / Humidity : <span id='rh'> </span>
+				  </div>
 				</div>	
-				
+									
 				
 			</div>
 		</div>

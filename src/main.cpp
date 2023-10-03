@@ -5,23 +5,38 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/sysinfo.h>
+#include <fstream>
+#include <iostream>
+#include <chrono>  // chrono::system_clock
+#include <ctime>   // localtime
+#include <iomanip> // put_time
+
+// Include library for HDC20X0 sensor
+#include "rp-hdc20x0.h"
 
 #include "main.h"
 
 //Signal size
-#define SIGNAL_SIZE_DEFAULT      512
-#define SIGNAL_UPDATE_INTERVAL      20
+#define SIGNAL_SIZE_DEFAULT      1024
+#define SIGNAL_UPDATE_INTERVAL      100
 
+// ofstream object declaration to write onto file
+std::ofstream outFile;
 
 //Signal
-CFloatSignal TACT("TACT", SIGNAL_SIZE_DEFAULT, 0.0f);
-CFloatSignal TSET("TSET", SIGNAL_SIZE_DEFAULT, 0.0f);
-CFloatSignal ITEC("ITEC", SIGNAL_SIZE_DEFAULT, 0.0f);
-CFloatSignal ILAS("ILAS", SIGNAL_SIZE_DEFAULT, 0.0f);
-std::vector<float> tAct_data(SIGNAL_SIZE_DEFAULT);
-std::vector<float> tSet_data(SIGNAL_SIZE_DEFAULT);
-std::vector<float> iTec_data(SIGNAL_SIZE_DEFAULT);
-std::vector<float> iLas_data(SIGNAL_SIZE_DEFAULT);
+CFloatSignal AIN_0("AIN_0", SIGNAL_SIZE_DEFAULT, 0.0f);
+CFloatSignal AIN_1("AIN_1", SIGNAL_SIZE_DEFAULT, 0.0f);
+CFloatSignal AIN_2("AIN_2", SIGNAL_SIZE_DEFAULT, 0.0f);
+CFloatSignal AIN_3("AIN_3", SIGNAL_SIZE_DEFAULT, 0.0f);
+std::vector<float> aIn0_data(SIGNAL_SIZE_DEFAULT);
+std::vector<float> aIn1_data(SIGNAL_SIZE_DEFAULT);
+std::vector<float> aIn2_data(SIGNAL_SIZE_DEFAULT);
+std::vector<float> aIn3_data(SIGNAL_SIZE_DEFAULT);
+
+CFloatSignal TEMP("TEMP", SIGNAL_SIZE_DEFAULT, 0.0f);
+CFloatSignal RH("RH", SIGNAL_SIZE_DEFAULT, 0.0f);
+std::vector<float> temp_data(SIGNAL_SIZE_DEFAULT);
+std::vector<float> rh_data(SIGNAL_SIZE_DEFAULT);
 
 //Parameter
 CBooleanParameter laserState("LASER_STATE", CBaseParameter::RW, false, 0);
@@ -124,9 +139,20 @@ int rp_app_init(void)
     // configure DIO7_N to output
     rp_DpinSetDirection (RP_DIO7_N, RP_OUT);
 
-    // Init generator config (without turning it on)
-    set_generator_config();
+    // Initialize output file
+    outFile.open("/opt/data/data.csv", std::ios::app);
+    if (!outFile) {
+        fprintf(stderr, "Error, could not open output file!\n");
+        return EXIT_FAILURE;
+    }
+    outFile << "Timestamp,Input,Value" << std::endl;
 	
+    if(setup_hdc20x0() != 0 )
+    {
+        fprintf(stderr, "Failed to init temperature sensor");
+        return EXIT_FAILURE;
+    }
+
     return 0;
 }
 
@@ -137,6 +163,9 @@ int rp_app_exit(void)
 
     rpApp_Release();
 	
+    // Closing data file
+    outFile.close();
+
     return 0;
 }
 
@@ -160,11 +189,14 @@ int rp_get_signals(float ***s, int *sig_num, int *sig_len)
 
 
 void UpdateSignals(void){
-	float val;
-    
-	// Update analog pin value
-	rp_AOpinSetValue(0, AMPLITUDE.Value());
+    float val;
+    float temperature, humidity;
+
+    // Update analog pin value
+    rp_AOpinSetValue(0, AOUT_0_AMPLITUDE.Value());
 	
+    // Read values from analog input and convert to physical values
+    
     // Read values from analog input and convert to physical values
     
     //Read Tact from pin 0
@@ -193,13 +225,26 @@ void UpdateSignals(void){
     iLas_data.erase(iLas_data.begin());
     iLas_data.push_back( 0.05 * val);
 
+    if(read_from_hdc20x0(&temperature, &humidity) == 0) {
+      outFile << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << ",Temp," << temperature << ",RH," << humidity << std::endl;
+      temp_data.erase(temp_data.begin());
+      temp_data.push_back(temperature);
+      rh_data.erase(rh_data.begin());
+      rh_data.push_back(humidity);
+    }
+    else {
+      fprintf(stderr, "Error, could not read temperature!\n");
+    }
+
     //Write data to signal
     for(int i = 0; i < SIGNAL_SIZE_DEFAULT; i++) 
     {
-        TACT[i] = tAct_data[i];
-        TSET[i] = tSet_data[i];
-        ITEC[i] = iTec_data[i];
-        ILAS[i] = iLas_data[i];
+        AIN_0[i] = aIn0_data[i];
+        AIN_1[i] = aIn1_data[i];
+        AIN_2[i] = aIn2_data[i];
+        AIN_3[i] = aIn3_data[i];
+		    TEMP[i] = temp_data[i];
+		    RH[i] = rh_data[i];
     }
 }
 
@@ -208,23 +253,23 @@ void UpdateParams(void){}
 
 
 void OnNewParams(void) {
-	laserState.Update();
-	
-	// If laserState on, we switch the laser state
-	if (laserState.Value() == false)
-	{
-        rp_DpinSetState (RP_DIO7_N, RP_LOW);
-        // We also switch on the led 0 as an indicator
-		rp_DpinSetState(RP_LED0, RP_LOW);
-	}
-	else
-	{
-        rp_DpinSetState (RP_DIO7_N, RP_HIGH);
-        // And switching off the led 0
-		rp_DpinSetState(RP_LED0, RP_HIGH);
-	}
-	
-	AMPLITUDE.Update();
+    laserState.Update();
+
+    // If laserState on, we switch the laser state
+    if (laserState.Value() == false)
+    {
+          rp_DpinSetState (RP_DIO7_N, RP_LOW);
+          // We also switch on the led 0 as an indicator
+      rp_DpinSetState(RP_LED0, RP_LOW);
+    }
+    else
+    {
+          rp_DpinSetState (RP_DIO7_N, RP_HIGH);
+          // And switching off the led 0
+      rp_DpinSetState(RP_LED0, RP_HIGH);
+    }
+
+    AMPLITUDE.Update();
 
     FREQUENCY_CH1.Update();
     AMPLITUDE_CH1.Update();
@@ -240,8 +285,8 @@ void OnNewParams(void) {
 
     ch1State.Update();
     // If Channel 1 is on, we switch the channel 1
-	if (ch1State.Value() == false)
-	{
+    if (ch1State.Value() == false)
+    {
         rp_GenOutDisable(RP_CH_1);
     }
     else
@@ -259,13 +304,13 @@ void OnNewParams(void) {
 
             CH1_UPDATED.Value() = false;
         }
-        
+
     }
 
     ch2State.Update();
     // If Channel 2 is on, we switch the channel 2
-	if (ch2State.Value() == false)
-	{
+    if (ch2State.Value() == false)
+    {
         rp_GenOutDisable(RP_CH_2);
     }
     else

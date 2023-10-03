@@ -10,7 +10,7 @@
     
     // App configuration
     APP.config = {};
-    APP.config.app_id = 'control_panel';
+    APP.config.app_id = 'rp-control-panel';
     APP.config.app_url = '/bazaar?start=' + APP.config.app_id + '?' + location.search.substr(1);
     APP.config.socket_url = 'ws://' + window.location.hostname + ':9002';
 
@@ -26,8 +26,8 @@
 	// Parameters
     APP.processing = false;
 	
-	//Laser state
-    APP.laser_state = false;
+	//Gpio state
+    APP.gpio_state = false;
 
 
 
@@ -117,18 +117,18 @@
             };
         }
     };
+ 
+  
+    // Set Amplitude
+    APP.setAmplitude = function() {
+      APP.amplitude = $('#amplitude_set').val();
+      var local = {};
+      local['AMPLITUDE'] = { value: APP.amplitude };
+      APP.ws.send(JSON.stringify({ parameters: local }));
+      $('#amplitude_value').text(APP.amplitude);
+    };
 
-	
-	// Set Amplitude
-	APP.setAmplitude = function() {
-		APP.amplitude = $('#amplitude_set').val();
-		var local = {};
-		local['AMPLITUDE'] = { value: APP.amplitude };
-		APP.ws.send(JSON.stringify({ parameters: local }));
-		$('#amplitude_value').text(APP.amplitude);
-	};
-
-
+  
     // Set parameters for Fast output generator OUT1
     APP.setFrequencyCh1 = function() {
         APP.frequency_ch1 = $('#frequency_set_ch1').val();
@@ -241,6 +241,11 @@
             if (sig_name == 'ILAS') {
                 $('#iLas').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1] * 1000).toFixed(1) + "mA");
             }
+            if (sig_name == 'TEMP') {
+                $('#temp').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1]).toFixed(2) + "°C");
+            }
+			      if (sig_name == 'RH') {
+                $('#rh').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1]).toFixed(2) + "%");
 
                 
             var points = [];
@@ -281,24 +286,24 @@
 
 // Page onload event handler
 $(function() {
-	// program checks if laser_state switch was clicked
-    $('#flexSwitchLaserState').click(function() {
+	// program checks if gpio_state switch was clicked
+    $('#flexSwitchGpioState').click(function() {
 
-       // changes local laser state
-       if (APP.laser_state == true){
-           $('#laser_on').hide();
-           $('#laser_off').show();
-           APP.laser_state = false;
+       // changes local gpio state
+       if (APP.gpio_state == true){
+           $('#gpio_on').hide();
+           $('#gpio_off').show();
+           APP.gpio_state = false;
        }
        else{
-           $('#laser_off').hide();
-           $('#laser_on').show();
-           APP.laser_state = true;
+           $('#gpio_off').hide();
+           $('#gpio_on').show();
+           APP.gpio_state = true;
        }
 
-       // sends current laser state to backend
+       // sends current gpio state to backend
        var local = {};
-       local['LASER_STATE'] = { value: APP.laser_state };
+       local['GPIO_STATE'] = { value: APP.gpio_state };
        APP.ws.send(JSON.stringify({ parameters: local }));
     });
    
@@ -316,7 +321,7 @@ $(function() {
                 },
                 xaxis: {
                     min: 0,
-                    max: 512,
+                    max: 1024,
                     show: false
                 },
                 xaxes: [
@@ -327,6 +332,8 @@ $(function() {
                     { position: 'left' , min: 10, max: 35},
                     { position: 'right' , min: -0.8, max: 0.8},
                     { position: 'right' , min: 0, max: 0.100}
+                    //{ position: 'left', min: 18, max: 28},
+                    //{ position: 'left', min: 30, max: 60}
                 ]
     });
 		
@@ -408,7 +415,7 @@ $(function() {
     $("#waveform_set_ch2").on("change input", function() {
         APP.setWaveformCh2();
     });
-
+  
     // program checks if ch2_state switch was clicked
     $('#flexSwitchCh2State').click(function() { 
         // changes local laser state
@@ -428,7 +435,6 @@ $(function() {
         local['CH2_STATE'] = { value: APP.ch2_state };
         APP.ws.send(JSON.stringify({ parameters: local }));
     });
-
 
    
     // Start application
