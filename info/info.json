@@ -1,6 +1,6 @@
 {
-    "name": "Analog read",
+    "name": "Control Panel Dev",
     "version": "0.94-BUILD_NUMBER",
     "revision": "REVISION",
-    "description": "Simple analog reading panel for the Red Pitaya. Based on web example template"
+    "description": "Simple control panel for the Red Pitaya. Based on web example template"
 }

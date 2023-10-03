@@ -244,9 +244,9 @@
             if (sig_name == 'TEMP') {
                 $('#temp').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1]).toFixed(2) + "°C");
             }
-			      if (sig_name == 'RH') {
+			if (sig_name == 'RH') {
                 $('#rh').text(parseFloat(new_signals[sig_name].value[new_signals[sig_name].size - 1]).toFixed(2) + "%");
-
+            }
                 
             var points = [];
             for (var i = 0; i < new_signals[sig_name].size; i++) {

@@ -24,14 +24,14 @@
 std::ofstream outFile;
 
 //Signal
-CFloatSignal AIN_0("AIN_0", SIGNAL_SIZE_DEFAULT, 0.0f);
-CFloatSignal AIN_1("AIN_1", SIGNAL_SIZE_DEFAULT, 0.0f);
-CFloatSignal AIN_2("AIN_2", SIGNAL_SIZE_DEFAULT, 0.0f);
-CFloatSignal AIN_3("AIN_3", SIGNAL_SIZE_DEFAULT, 0.0f);
-std::vector<float> aIn0_data(SIGNAL_SIZE_DEFAULT);
-std::vector<float> aIn1_data(SIGNAL_SIZE_DEFAULT);
-std::vector<float> aIn2_data(SIGNAL_SIZE_DEFAULT);
-std::vector<float> aIn3_data(SIGNAL_SIZE_DEFAULT);
+CFloatSignal TACT("TACT", SIGNAL_SIZE_DEFAULT, 0.0f);
+CFloatSignal TSET("TSET", SIGNAL_SIZE_DEFAULT, 0.0f);
+CFloatSignal ITEC("ITEC", SIGNAL_SIZE_DEFAULT, 0.0f);
+CFloatSignal ILAS("ILAS", SIGNAL_SIZE_DEFAULT, 0.0f);
+std::vector<float> tAct_data(SIGNAL_SIZE_DEFAULT);
+std::vector<float> tSet_data(SIGNAL_SIZE_DEFAULT);
+std::vector<float> iTec_data(SIGNAL_SIZE_DEFAULT);
+std::vector<float> iLas_data(SIGNAL_SIZE_DEFAULT);
 
 CFloatSignal TEMP("TEMP", SIGNAL_SIZE_DEFAULT, 0.0f);
 CFloatSignal RH("RH", SIGNAL_SIZE_DEFAULT, 0.0f);
@@ -193,7 +193,7 @@ void UpdateSignals(void){
     float temperature, humidity;
 
     // Update analog pin value
-    rp_AOpinSetValue(0, AOUT_0_AMPLITUDE.Value());
+    rp_AOpinSetValue(0, AMPLITUDE.Value());
 	
     // Read values from analog input and convert to physical values
     
@@ -226,25 +226,28 @@ void UpdateSignals(void){
     iLas_data.push_back( 0.05 * val);
 
     if(read_from_hdc20x0(&temperature, &humidity) == 0) {
-      outFile << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << ",Temp," << temperature << ",RH," << humidity << std::endl;
-      temp_data.erase(temp_data.begin());
-      temp_data.push_back(temperature);
-      rh_data.erase(rh_data.begin());
-      rh_data.push_back(humidity);
+        // Get timestamp
+        auto now = std::chrono::system_clock::now();
+        auto in_time_t = std::chrono::system_clock::to_time_t(now);
+        outFile << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << ",Temp," << temperature << ",RH," << humidity << std::endl;
+        temp_data.erase(temp_data.begin());
+        temp_data.push_back(temperature);
+        rh_data.erase(rh_data.begin());
+        rh_data.push_back(humidity);
     }
     else {
-      fprintf(stderr, "Error, could not read temperature!\n");
+        fprintf(stderr, "Error, could not read temperature!\n");
     }
 
     //Write data to signal
     for(int i = 0; i < SIGNAL_SIZE_DEFAULT; i++) 
     {
-        AIN_0[i] = aIn0_data[i];
-        AIN_1[i] = aIn1_data[i];
-        AIN_2[i] = aIn2_data[i];
-        AIN_3[i] = aIn3_data[i];
-		    TEMP[i] = temp_data[i];
-		    RH[i] = rh_data[i];
+        TACT[i] = tAct_data[i];
+        TSET[i] = tSet_data[i];
+        ITEC[i] = iTec_data[i];
+        ILAS[i] = iLas_data[i];
+        TEMP[i] = temp_data[i];
+        RH[i] = rh_data[i];
     }
 }
 
