@@ -26,8 +26,8 @@
 	// Parameters
     APP.processing = false;
 	
-	//Gpio state
-    APP.gpio_state = false;
+	//Laser state
+    APP.laser_state = false;
 
 
 
@@ -286,24 +286,24 @@
 
 // Page onload event handler
 $(function() {
-	// program checks if gpio_state switch was clicked
-    $('#flexSwitchGpioState').click(function() {
+	// program checks if laser_state  switch was clicked
+    $('#flexSwitchLaserState').click(function() {
 
-       // changes local gpio state
-       if (APP.gpio_state == true){
-           $('#gpio_on').hide();
-           $('#gpio_off').show();
-           APP.gpio_state = false;
+       // changes local laser state
+       if (APP.laser_state == true){
+           $('#laser_on').hide();
+           $('#laser_off').show();
+           APP.laser_state = false;
        }
        else{
-           $('#gpio_off').hide();
-           $('#gpio_on').show();
-           APP.gpio_state = true;
+           $('#laser_off').hide();
+           $('#laser_on').show();
+           APP.laser_state = true;
        }
 
-       // sends current gpio state to backend
+       // sends current laser state to backend
        var local = {};
-       local['GPIO_STATE'] = { value: APP.gpio_state };
+       local['LASER_STATE'] = { value: APP.laser_state };
        APP.ws.send(JSON.stringify({ parameters: local }));
     });
    
